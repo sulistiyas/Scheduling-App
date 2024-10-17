@@ -25,6 +25,12 @@
         <div class="row">
           <div class="col-md-3">
             <div class="sticky-top mb-3">
+              {{-- <form action="{{ route('sendMail') }}" method="post">
+                @csrf
+                <input type="email" name="txt_mail" id="txt_mail">
+                <input type="text" name="txt_msg" id="txt_mail">
+                <input type="submit" value="submit">
+              </form> --}}
               <div class="card">
                 <div class="card-header">
                   <h4 class="card-title">Draggable Events</h4>

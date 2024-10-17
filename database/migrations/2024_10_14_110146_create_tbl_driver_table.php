@@ -11,12 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('order_driver', function (Blueprint $table) {
-            $table->id('id_order_driver');
-            $table->integer('id_tbl_driver');
-            $table->integer('id_users');
-            $table->string('status_order_driver');
-            $table->string('notes_driver')->nullable();
+        Schema::create('tbl_driver', function (Blueprint $table) {
+            $table->id('id_tbl_driver');
+            $table->integer('id_driver');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -27,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('order_driver');
+        Schema::dropIfExists('tbl_driver');
     }
 };

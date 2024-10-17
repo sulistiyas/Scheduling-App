@@ -62,6 +62,11 @@
                                                     </button>
                                                 <div class="dropdown-divider"></div>
                                                   {{-- <a class="dropdown-item" href=""></a> --}}
+                                                    <form onsubmit="return confirm('Send Login Information ?');" action="{{ route('sendMail') }}" method="POST">
+                                                        @csrf
+                                                        <input type="hidden" name="txt_id" id="txt_id" value="{{ $item_user->id }}">
+                                                        <button type="submit" class="dropdown-item">Send Account Information</button>
+                                                    </form>
                                                     <form onsubmit="return confirm('Data Will Be deleted Permanently, Sure ?');" action="{{ route('destroy_users',[$item_user->id]) }}" method="POST">
                                                         @csrf
                                                         @method('DELETE')
@@ -115,8 +120,9 @@
                             <label for="txt_job">Job Status</label>
                             <select name="txt_job" id="txt_job" class="form-control select2bs4" required>
                                 <option value="" disabled selected>- Select Role -</option>
-                                <option value="Driver">Driver</option>
-                                <option value="Messenger">Messenger</option>
+                                <option value="Director">Director</option>
+                                <option value="Manager">Manager</option>
+                                <option value="Staff">Staff</option>
                             </select>
                         </div>
                     </div>

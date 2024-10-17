@@ -2,21 +2,18 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class OrderDriver extends Model
+class Driver extends Model
 {
     // use HasFactory;
     use SoftDeletes;
-    public $table = 'order_driver';
-    protected $primaryKey = 'id_order_driver';
+    public $table = 'tbl_driver';
+    protected $primaryKey = 'id_tbl_driver';
     protected $fillable = [
-        'id_users',
-        'id_tbl_driver',
-        'status_order_driver',
-        'notes_driver'
+        'id_driver',
     ];
 
     protected $dates = [

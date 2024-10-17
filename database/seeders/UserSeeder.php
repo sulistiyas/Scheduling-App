@@ -48,7 +48,7 @@ class UserSeeder extends Seeder
                 'id_employee'       => 2,
                 'id_users'          => 2,
                 'user_phone'        => '085711250060',
-                'user_job_status'   => 'Driver',
+                'user_job_status'   => 'Staff',
                 'created_at'        => date('Y-m-d'),
                 'updated_at'        => date('Y-m-d'),
             ]

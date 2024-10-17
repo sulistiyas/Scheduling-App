@@ -47,8 +47,8 @@
             </a>
           </li>
           {{-- Driver --}}
-          <li class="{{ Request::routeIs('index_driver') ? 'nav-item menu-open' : 'nav-item menu' }}">
-            <a href="#" class="{{ Request::routeIs('index_driver') ? 'nav-link active' : 'nav-link' }}">
+          <li class="{{ Request::routeIs('index_driver') || Request::routeIs('create_book_driver') ||  Request::routeIs('index_create_driver') || Request::routeIs('index_result_driver') ? 'nav-item menu-open' : 'nav-item menu' }}">
+            <a href="#" class="{{ Request::routeIs('index_driver') || Request::routeIs('create_book_driver') ||  Request::routeIs('index_create_driver') || Request::routeIs('index_result_driver') ? 'nav-link active' : 'nav-link' }}">
               <i class="nav-icon fas fa-car-side"></i>
               <p>
                 Driver
@@ -56,12 +56,39 @@
               </p>
             </a>
             <ul class="nav nav-treeview">
-              <li class="nav-item">
-                <a href="{{ route('index_driver') }}"class="{{ Request::routeIs('index_driver') ? 'nav-link active' : 'nav-link' }}">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Schedule</p>
-                </a>
-              </li>
+              @if (Auth::user()->user_level == '0')
+                  <li class="nav-item">
+                    <a href="{{ route('index_create_driver') }}"class="{{ Request::routeIs('index_create_driver') ? 'nav-link active' : 'nav-link' }}">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Add Driver</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="{{ route('create_book_driver') }}"class="{{ Request::routeIs('create_book_driver') ? 'nav-link active' : 'nav-link' }}">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Book Driver</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="{{ route('index_driver') }}"class="{{ Request::routeIs('index_driver') || Request::routeIs('index_result_driver') ? 'nav-link active' : 'nav-link' }}">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Schedule</p>
+                    </a>
+                  </li>
+              @else
+                  <li class="nav-item">
+                    <a href="{{ route('create_book_driver') }}"class="{{ Request::routeIs('create_book_driver') ? 'nav-link active' : 'nav-link' }}">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Book Driver</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="{{ route('index_driver') }}"class="{{ Request::routeIs('index_driver') || Request::routeIs('index_result_driver') ? 'nav-link active' : 'nav-link' }}">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Schedule</p>
+                    </a>
+                  </li>
+              @endif
             </ul>
             <ul class="nav nav-treeview">
               <li class="nav-item">

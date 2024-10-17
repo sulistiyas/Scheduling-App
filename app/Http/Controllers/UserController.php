@@ -7,6 +7,9 @@ use App\Models\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+// use Illuminate\Support\Facades\Mail;
+use App\Mail\SendEmailUserInformation;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\Validator;
 
@@ -69,6 +72,18 @@ class UserController extends Controller
                 'created_at'    => date('Y-m-d h:i:s'),
                 'updated_at'    => date('Y-m-d h:i:s')
             ]);
+
+            $get_data = DB::table('users')->where('id', '=', $id_users)->where('deleted_at', '=', NULL)->get();
+            foreach ($get_data as $item) {
+                $name = $item->name;
+                $email = $item->email;
+            }
+            $data = [
+                'name'      => $name,
+                'email'     => $email,
+                'password'  => "semangat"
+            ];
+            Mail::to($email)->send(new SendEmailUserInformation($data));
             Alert::success('Success', 'Insert Data Successfully');
             return redirect()->route('index_user');
         }
@@ -144,5 +159,21 @@ class UserController extends Controller
         $employee_data->delete();
         Alert::success('Success', 'Data Deleted Successfully');
         return redirect()->route('index_user');
+    }
+
+    public function sendMail(Request $request)
+    {
+        $user_id = $request->txt_id;
+        $get_data = DB::table('users')->where('id', '=', $user_id)->where('deleted_at', '=', NULL)->get();
+        foreach ($get_data as $item) {
+            $name = $item->name;
+            $email = $item->email;
+        }
+        $data = [
+            'name'      => $name,
+            'email'     => $email,
+            'password'  => "semangat"
+        ];
+        Mail::to($email)->send(new SendEmailUserInformation($data));
     }
 }
