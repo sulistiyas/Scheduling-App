@@ -18,8 +18,8 @@ CREATE TABLE IF NOT EXISTS `cache` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
-	('1d6965678580cdb74cb5cb476fa97d17', 'i:1;', 1728445946),
-	('1d6965678580cdb74cb5cb476fa97d17:timer', 'i:1728445946;', 1728445946);
+	('1d6965678580cdb74cb5cb476fa97d17', 'i:1;', 1729220913),
+	('1d6965678580cdb74cb5cb476fa97d17:timer', 'i:1729220913;', 1729220913);
 
 CREATE TABLE IF NOT EXISTS `cache_locks` (
   `key` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -28,6 +28,28 @@ CREATE TABLE IF NOT EXISTS `cache_locks` (
   PRIMARY KEY (`key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+
+CREATE TABLE IF NOT EXISTS `detail_order_driver` (
+  `id_detail_order_driver` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `id_order_driver` int DEFAULT NULL,
+  `item_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `order_pick_up_date` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `order_pick_up_time` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `note_sender` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `order_arrive_date` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `order_arrive_time` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `client` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `destination_address` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id_detail_order_driver`),
+  KEY `fk_tbl_detail_order_messenger_to_order_messenger` (`id_order_driver`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `detail_order_driver` (`id_detail_order_driver`, `id_order_driver`, `item_type`, `order_pick_up_date`, `order_pick_up_time`, `note_sender`, `order_arrive_date`, `order_arrive_time`, `client`, `destination_address`, `created_at`, `updated_at`, `deleted_at`) VALUES
+	(3, 3, 'People', '16-Oct-2024', '09:00:00', 'a', '16-Oct-2024', '09:30:00', 's', 'd', '2024-10-16 03:07:19', '2024-10-16 03:07:19', NULL),
+	(4, 4, 'People', '16-Oct-2024', '09:00:00', 'sda', '16-Oct-2024', '09:30:00', 'dasd', 'dasd', '2024-10-16 03:08:16', '2024-10-16 03:08:16', NULL);
 
 CREATE TABLE IF NOT EXISTS `employee` (
   `id_employee` bigint unsigned NOT NULL AUTO_INCREMENT,
@@ -38,15 +60,15 @@ CREATE TABLE IF NOT EXISTS `employee` (
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id_employee`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `employee` (`id_employee`, `id_users`, `user_phone`, `user_job_status`, `created_at`, `updated_at`, `deleted_at`) VALUES
-	(1, 1, '082110873602', 'Admin', '2024-10-08 17:00:00', '2024-10-08 17:00:00', NULL),
-	(2, 2, '085711250060', 'Driver', '2024-10-08 17:00:00', '2024-10-08 17:00:00', NULL),
-	(3, 3, '12', 'Messenger', '2024-10-08 21:37:30', '2024-10-08 23:43:57', '2024-10-08 23:43:57'),
-	(4, 4, '021', 'Driver', '2024-10-08 23:45:09', '2024-10-08 23:45:09', NULL),
-	(5, 5, '021', 'Driver', '2024-10-08 23:45:28', '2024-10-08 23:45:28', NULL),
-	(6, 6, '021', 'Messenger', '2024-10-08 23:45:56', '2024-10-08 23:45:56', NULL);
+	(1, 1, '082110873602', 'Admin', '2024-10-13 17:00:00', '2024-10-13 17:00:00', NULL),
+	(2, 2, '085711250060', 'Staff', '2024-10-13 17:00:00', '2024-10-13 17:00:00', NULL),
+	(4, 4, '081284056638', 'Staff', '2024-10-08 16:45:09', '2024-10-08 16:45:09', NULL),
+	(5, 5, '087880485141', 'Staff', '2024-10-08 16:45:28', '2024-10-08 16:45:28', NULL),
+	(6, 6, '087880485141', 'Staff', '2024-10-08 16:45:56', '2024-10-17 09:49:39', NULL),
+	(7, 7, '085735936711', 'Staff', '2024-10-17 09:46:28', '2024-10-17 09:46:28', NULL);
 
 CREATE TABLE IF NOT EXISTS `failed_jobs` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
@@ -94,15 +116,34 @@ CREATE TABLE IF NOT EXISTS `migrations` (
   `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `batch` int NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
-	(32, '0001_01_01_000000_create_users_table', 1),
-	(33, '0001_01_01_000001_create_cache_table', 1),
-	(34, '0001_01_01_000002_create_jobs_table', 1),
-	(35, '2024_10_08_045308_add_two_factor_columns_to_users_table', 1),
-	(36, '2024_10_08_045357_create_personal_access_tokens_table', 1),
-	(37, '2024_10_09_033931_create_employee_table', 1);
+	(9, '0001_01_01_000000_create_users_table', 1),
+	(10, '0001_01_01_000001_create_cache_table', 1),
+	(11, '0001_01_01_000002_create_jobs_table', 1),
+	(12, '2024_10_08_045308_add_two_factor_columns_to_users_table', 1),
+	(13, '2024_10_08_045357_create_personal_access_tokens_table', 1),
+	(14, '2024_10_09_033931_create_employee_table', 1),
+	(15, '2024_10_09_152254_create_order_driver_table', 1),
+	(16, '2024_10_09_152300_create_detail_order_driver_table', 1),
+	(17, '2024_10_14_110146_create_tbl_driver_table', 1);
+
+CREATE TABLE IF NOT EXISTS `order_driver` (
+  `id_order_driver` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `id_tbl_driver` int NOT NULL,
+  `id_users` int NOT NULL,
+  `status_order_driver` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `notes_driver` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id_order_driver`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `order_driver` (`id_order_driver`, `id_tbl_driver`, `id_users`, `status_order_driver`, `notes_driver`, `created_at`, `updated_at`, `deleted_at`) VALUES
+	(3, 1, 1, '3', NULL, '2024-10-16 03:07:19', '2024-10-16 03:07:19', NULL),
+	(4, 4, 1, '3', NULL, '2024-10-16 03:08:16', '2024-10-16 03:08:16', NULL);
 
 CREATE TABLE IF NOT EXISTS `password_reset_tokens` (
   `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -142,7 +183,22 @@ CREATE TABLE IF NOT EXISTS `sessions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-	('munvVPBASJJt2VBSX2bJe64seB0aUDy7IT4jHYpT', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36', 'YTo3OntzOjY6Il90b2tlbiI7czo0MDoibjZCVmFqdTJZV0pMT2xIR0lJell3U2hYU0U4Tm9UZWJIRDVrRVZHSCI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjE6e3M6MzoidXJsIjtzOjQyOiJodHRwOi8vc2NoZWR1bGluZy1hcHAudGVzdDo4MDgwL0FkbWluL1VzZXIiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToxO3M6MjE6InBhc3N3b3JkX2hhc2hfc2FuY3R1bSI7czo2MDoiJDJ5JDEyJE02Rk5XbS9NZ1kyY1dPTEZOckdLZS5aUERXa2NwSjNLN2lIRndsWTlzRGV0enhQNEYzU0ZXIjtzOjU6ImFsZXJ0IjthOjA6e319', 1728456357);
+	('Ln4hl0LXeMKvw8J8mhvDr8nfUgRzhexhbw8ycynL', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36', 'YTo2OntzOjY6Il90b2tlbiI7czo0MDoiN3hLUWp3MW5XTmZNZk16SGFYcmh2ajFxd3RWeHhjTzRiV1psWjIzcyI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjE6e3M6MzoidXJsIjtzOjMxOiJodHRwOi8vc2NoZWR1bGluZy1hcHAudGVzdDo4MDgwIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTtzOjIxOiJwYXNzd29yZF9oYXNoX3NhbmN0dW0iO3M6NjA6IiQyeSQxMiRIZHFSaFZpVTJYMENHUXRUaW13SUhPeHNza1VPSWtsSVhtTi5tZTlUWHA2RkVkR2dFcFJ2UyI7fQ==', 1729220855),
+	('u8H544XnzEKUWsVfkD1GefZ6wG8gpH76b7aUwjBJ', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36', 'YTo3OntzOjY6Il90b2tlbiI7czo0MDoiTTVPT0ZudnhwTDlyOGQzblhTc1Y4c3dUckJ0dXJzYnNHVWVVVjRUNSI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjE6e3M6MzoidXJsIjtzOjQ3OiJodHRwOi8vc2NoZWR1bGluZy1hcHAudGVzdDo4MDgwL0RyaXZlci9TY2hlZHVsZSI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjE7czoyMToicGFzc3dvcmRfaGFzaF9zYW5jdHVtIjtzOjYwOiIkMnkkMTIkSGRxUmhWaVUyWDBDR1F0VGltd0lIT3hzc2tVT0lrbElYbU4ubWU5VFhwNkZFZEdnRXBSdlMiO3M6NToiYWxlcnQiO2E6MDp7fX0=', 1729161005);
+
+CREATE TABLE IF NOT EXISTS `tbl_driver` (
+  `id_tbl_driver` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `id_driver` int NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id_tbl_driver`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `tbl_driver` (`id_tbl_driver`, `id_driver`, `created_at`, `updated_at`, `deleted_at`) VALUES
+	(1, 4, '2024-10-14 04:57:53', '2024-10-14 04:57:53', NULL),
+	(4, 5, '2024-10-14 06:45:21', '2024-10-14 06:45:21', NULL),
+	(7, 2, '2024-10-14 06:51:12', '2024-10-14 06:51:12', NULL);
 
 CREATE TABLE IF NOT EXISTS `users` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
@@ -162,14 +218,15 @@ CREATE TABLE IF NOT EXISTS `users` (
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `users_email_unique` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `two_factor_secret`, `two_factor_recovery_codes`, `two_factor_confirmed_at`, `user_level`, `remember_token`, `current_team_id`, `profile_photo_path`, `created_at`, `updated_at`, `deleted_at`) VALUES
-	(1, 'Sulistiya Nugroho', 'sulis.nugroho@inlingua.co.id', NULL, '$2y$12$M6FNWm/MgY2cWOLFNrGKe.ZPDWkcpJ3K7iHFwlY9sDetzxP4F3SFW', NULL, NULL, NULL, '0', NULL, NULL, NULL, '2024-10-08 17:00:00', '2024-10-08 17:00:00', NULL),
-	(2, 'Isnaini Nur Pramesty', 'pramesnain@gmail.com', NULL, '$2y$12$C.JyqTOJYVZPBbIPURqfDuU6n0v4GwK1BCsm4gxkvcrcO9suv7fB2', NULL, NULL, NULL, '1', NULL, NULL, NULL, '2024-10-08 17:00:00', '2024-10-08 17:00:00', NULL),
-	(4, 'Heri Susmono', 'heri.susmono@inlingua.co.id', NULL, '$2y$12$0KUcDbOCWmp3NaxIqaL3f.lavFjimymWHm4sROm8k23iQbqph3rJe', NULL, NULL, NULL, '1', NULL, NULL, NULL, '2024-10-08 23:45:09', '2024-10-08 23:45:09', NULL),
-	(5, 'Slamet Sutikno', 'slamet.sutikno@inlingua.co.id', NULL, '$2y$12$wOUpwx375hSyBQYWASrWEeNvGNVNYbPRAISeVfE6bGsnOqHVOjw8C', NULL, NULL, NULL, '1', NULL, NULL, NULL, '2024-10-08 23:45:28', '2024-10-08 23:45:28', NULL),
-	(6, 'Ginanjar Yulianto', 'ginanjar.yulianto@inlingua.co.id', NULL, '$2y$12$bV4q.hYnk66NVrHJyyhzEuR0PW5/uVYWTd4Pw0x3ZzXddd4HMuGT2', NULL, NULL, NULL, '1', NULL, NULL, NULL, '2024-10-08 23:45:56', '2024-10-08 23:45:56', NULL);
+	(1, 'Sulistiya Nugroho', 'sulis.nugroho@inlingua.co.id', NULL, '$2y$12$HdqRhViU2X0CGQtTimwIHOxsskUOIklIXmN.me9TXp6FEdGgEpRvS', NULL, NULL, NULL, '0', NULL, NULL, NULL, '2024-10-13 17:00:00', '2024-10-13 17:00:00', NULL),
+	(2, 'Isnaini Nur Pramesty', 'pramesnain@gmail.com', NULL, '$2y$12$bTGHJBL545VuOyS6xX9tpe5JGyby3L7y2PawN4eMOCui.E3Xv5AEe', NULL, NULL, NULL, '1', NULL, NULL, NULL, '2024-10-13 17:00:00', '2024-10-13 17:00:00', NULL),
+	(4, 'Heri Susmono', 'heri.susmono@inlingua.co.id', NULL, '$2y$12$0KUcDbOCWmp3NaxIqaL3f.lavFjimymWHm4sROm8k23iQbqph3rJe', NULL, NULL, NULL, '1', NULL, NULL, NULL, '2024-10-08 16:45:09', '2024-10-08 16:45:09', NULL),
+	(5, 'Slamet Sutikno', 'slamet.sutikno@inlingua.co.id', NULL, '$2y$12$wOUpwx375hSyBQYWASrWEeNvGNVNYbPRAISeVfE6bGsnOqHVOjw8C', NULL, NULL, NULL, '1', NULL, NULL, NULL, '2024-10-08 16:45:28', '2024-10-08 16:45:28', NULL),
+	(6, 'Ginanjar Yulianto', 'ginanjar.yulianto@inlingua.co.id', NULL, '$2y$12$bV4q.hYnk66NVrHJyyhzEuR0PW5/uVYWTd4Pw0x3ZzXddd4HMuGT2', NULL, NULL, NULL, '1', NULL, NULL, NULL, '2024-10-08 16:45:56', '2024-10-08 16:45:56', NULL),
+	(7, 'Adelia Wiratna', 'adelia.wiratna@inlingua.co.id', NULL, '$2y$12$cLI.gURkw9CXC.xGjOvFjOcg7ygcZGPv9KJmMjKDa8nlsW.hkTaSG', NULL, NULL, NULL, '1', NULL, NULL, NULL, '2024-10-17 09:46:28', '2024-10-17 09:46:28', NULL);
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

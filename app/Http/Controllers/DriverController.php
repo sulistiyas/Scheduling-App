@@ -257,8 +257,6 @@ class DriverController extends Controller
                             'created_at'            => date('Y-m-d h:i:s'),
                             'updated_at'            => date('Y-m-d h:i:s'),
                         ]);
-                        Alert::success('Success', 'The order has been sent to the Driver');
-                        return redirect()->route('create_book_driver');
                         return $this->sendWa($driver_id, $id_order_driver);
                     }
                 }
@@ -275,17 +273,18 @@ class DriverController extends Controller
         $order_arrive_time = date('h:i:s');
         $get_driver = DB::table('order_driver')
             ->join('detail_order_driver', 'detail_order_driver.id_order_driver', '=', 'order_driver.id_order_driver')
-            ->join('tbl_driver', 'tbl_driver.id_driver', '=', 'order_driver.id_tbl_driver')
+            ->join('tbl_driver', 'tbl_driver.id_tbl_driver', '=', 'order_driver.id_tbl_driver')
             ->join('users', 'users.id', '=', 'tbl_driver.id_driver')
-            ->where('order_driver.id_order_driver', '=', $driver_id)
+            ->join('employee', 'employee.id_users', '=', 'users.id')
+            ->where('tbl_driver.id_tbl_driver', '=', $driver_id)
             ->get();
         foreach ($get_driver as $item_driver) {
-            # code...
+            $wa_num = $item_driver->user_phone;
         }
         $get_detail_order = DB::table('order_driver')
             ->join('detail_order_driver', 'detail_order_driver.id_order_driver', '=', 'order_driver.id_order_driver')
             ->join('users', 'users.id', '=', 'order_driver.id_users')
-            ->where('order_driver.id_order_driver', '=', $driver_id)
+            ->where('order_driver.id_order_driver', '=', $id_order_driver)
             ->get();
         foreach ($get_detail_order as $item_order) {
             $nama_request = $item_order->name;
@@ -305,7 +304,7 @@ class DriverController extends Controller
             '5. Alamat Pickup : ' . $add_pick . "\n" .
             '6. Alamat Tujuan : ' . $add_dest . "\n" .
             '7. Maksimal Waktu Sampai : ' . $max_time;
-        $no_wa = '082110873602';
+        $no_wa = $wa_num;
         $token = 'vVg3VwUmzcTxGy3kBzo6';
 
         $curl = curl_init();
@@ -338,7 +337,9 @@ class DriverController extends Controller
         if (isset($error_msg)) {
             echo $error_msg;
         }
-        echo $response;
+        // echo $response;
+        Alert::success('Success', 'The order has been sent to the Driver');
+        return redirect()->route('create_book_driver');
     }
 
     /**

@@ -100,17 +100,34 @@
             </ul>
           </li>
           {{-- Messenger --}}
-          <li class="nav-item">
-            <a href="#" class="nav-link">
+          <li class="{{ Request::routeIs('index_create_messenger') || Request::routeIs('index_schedule_messenger') || Request::routeIs('index_result_messenger') || Request::routeIs('create_book_messenger') ? 'nav-item menu-open' : 'nav-item menu' }}">
+            <a href="#" class="{{ Request::routeIs('index_create_messenger') || Request::routeIs('index_schedule_messenger') || Request::routeIs('index_result_messenger') || Request::routeIs('create_book_messenger') ? 'nav-link active' : 'nav-link' }}">
               <i class="nav-icon fas fa-motorcycle"></i>
               <p>
                 Messenger
                 <i class="right fas fa-angle-left"></i>
               </p>
             </a>
+            @if (Auth::user()->user_level == '0')
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="#" class="nav-link">
+                <a href="{{ route('index_create_messenger') }}" class="{{ Request::routeIs('index_create_messenger') ? 'nav-link active' : 'nav-link' }}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Add Messenger</p>
+                </a>
+              </li>
+            </ul>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{{ route('create_book_messenger') }}" class="{{ Request::routeIs('create_book_messenger') ? 'nav-link active' : 'nav-link' }}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Book Messenger</p>
+                </a>
+              </li>
+            </ul>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{{ route('index_schedule_messenger') }}" class="{{ Request::routeIs('index_schedule_messenger') || Request::routeIs('index_result_messenger') ? 'nav-link active' : 'nav-link' }}">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Schedule</p>
                 </a>
@@ -124,6 +141,32 @@
                 </a>
               </li>
             </ul>
+            @else
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{{ route('create_book_messenger') }}" class="{{ Request::routeIs('create_book_messenger') ? 'nav-link active' : 'nav-link' }}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Book Messenger</p>
+                </a>
+              </li>
+            </ul>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="#" class="{{ Request::routeIs('index_schedule_messenger') ? 'nav-link active' : 'nav-link' }}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Schedule</p>
+                </a>
+              </li>
+            </ul>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Report</p>
+                </a>
+              </li>
+            </ul>
+            @endif
           </li>
           @if (Auth::user()->user_level == '0')
             {{-- User Management --}}

@@ -1,10 +1,9 @@
 <?php
 
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DriverController;
-use App\Mail\SendEmailUserInformation;
+use App\Http\Controllers\MessengerController;
 
 // Route::get('/', function () {
 //     return view('welcome');
@@ -30,5 +29,15 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
     Route::post('/Driver/Book/Store', [DriverController::class, 'store_booking'])->name('store_book_driver');
 
     Route::get('/Driver/Send/WA', [DriverController::class, 'sendWa'])->name('sendWa');
+
+    Route::get('/Messenger/Add', [MessengerController::class, 'index_create_messenger'])->name('index_create_messenger');
+    Route::post('/Messenger/Store', [MessengerController::class, 'store_create_messenger'])->name('store_create_messenger');
+    Route::get('/Messenger/Schedule', [MessengerController::class, 'index_schedule_messenger'])->name('index_schedule_messenger');
+    Route::post('/Messenger/Schedule/Result', [MessengerController::class, 'index_result_messenger'])->name('index_result_messenger');
+    Route::get('/Messenger/Book', [MessengerController::class, 'create_book_messenger'])->name('create_book_messenger');
+    Route::post('/Messenger/Book/Store', [MessengerController::class, 'store_book_messenger'])->name('store_book_messenger');
+
+    Route::get('/Messenger/Send/WA', [MessengerController::class, 'sendWaMessenger'])->name('sendWaMessenger');
+
     Route::post('/Email/Send', [UserController::class, 'sendMail'])->name('sendMail');
 });
