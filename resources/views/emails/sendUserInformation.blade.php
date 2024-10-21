@@ -27,7 +27,7 @@
                                 <p>Welcome to the Scheduling-App.</p>
                                 <p>We are pleased to inform you of your login details as described below. Please kindly click on the below link and enter in your Username and Password. </p>
                                 <ul>
-                                    <li><b>URL :</b> <a href="#">Scheduling-App</a></li>
+                                    <li><b>URL :</b> <a href="https://scheduling-app.inlingua.co.id/">Scheduling-App</a></li>
                                     <li><b>Username : {{ $data['email'] }} </b> </li>
                                     <li><b>Password : {{ $data['password'] }} </b> </li>
                                 </ul>
