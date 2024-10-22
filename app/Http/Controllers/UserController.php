@@ -56,7 +56,7 @@ class UserController extends Controller
             User::create([
                 'name'          => $request->txt_name,
                 'email'         => $request->txt_email,
-                'password'      => Hash::make($request->txt_name),
+                'password'      => Hash::make($request->txt_pass),
                 'user_level'    => '1',
                 'created_at'    => date('Y-m-d h:i:s'),
                 'updated_at'    => date('Y-m-d h:i:s')

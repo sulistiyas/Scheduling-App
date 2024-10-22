@@ -16,7 +16,7 @@
               // if women : pict women 
               // if men : pict men
           @endphp
-          <img src="{{ asset('assets/dist/img/avatar4.png') }}" class="img-circle elevation-2" alt="User Image">
+          <img src="{{ asset('assets/dist/img/user.png') }}" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
           <a href="#" class="d-block">{{ Auth::user()->name }}</a>
@@ -152,7 +152,7 @@
             </ul>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="#" class="{{ Request::routeIs('index_schedule_messenger') ? 'nav-link active' : 'nav-link' }}">
+                <a href="{{ route('index_schedule_messenger') }}" class="{{ Request::routeIs('index_schedule_messenger') || Request::routeIs('index_result_messenger') ? 'nav-link active' : 'nav-link' }}">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Schedule</p>
                 </a>

@@ -28,6 +28,9 @@ class DriverController extends Controller
     public function index_result_driver(Request $request)
     {
         $driver = $request->selected_driver;
+        $driver_name = DB::table('tbl_driver')
+            ->join('users', 'users.id', '=', 'tbl_driver.id_driver')
+            ->where('tbl_driver.id_tbl_driver', '=', $driver)->get();
         $get_driver = DB::table('tbl_driver')
             ->join('users', 'users.id', '=', 'tbl_driver.id_driver')
             ->join('employee', 'employee.id_users', '=', 'users.id')
@@ -106,7 +109,7 @@ class DriverController extends Controller
             ->where('detail_order_driver.order_arrive_date', '=', $date6)
             ->orderBy('detail_order_driver.order_arrive_time', 'ASC')->get();
         // dd(['get_order_driver' => $get_order_driver]);
-        return view('layouts.driver.schedule_result', compact('get_order_driver', 'get_order_driver1', 'get_order_driver2', 'get_order_driver3', 'get_order_driver4', 'get_order_driver5', 'get_order_driver6', 'get_driver'));
+        return view('layouts.driver.schedule_result', compact('driver_name', 'get_order_driver', 'get_order_driver1', 'get_order_driver2', 'get_order_driver3', 'get_order_driver4', 'get_order_driver5', 'get_order_driver6', 'get_driver'));
     }
 
     public function index_create_driver()
@@ -249,6 +252,7 @@ class DriverController extends Controller
                             'item_type'             => $request->item_type,
                             'order_pick_up_date'    => $request->inputOrderPickUpDate,
                             'order_pick_up_time'    => $request->inputOrderPickUpTime,
+                            'pick_address'          => $request->txt_pick,
                             'note_sender'           => $request->txt_note,
                             'order_arrive_date'     => $request->arrive_date,
                             'order_arrive_time'     => $request->arrive_time,
@@ -257,14 +261,119 @@ class DriverController extends Controller
                             'created_at'            => date('Y-m-d h:i:s'),
                             'updated_at'            => date('Y-m-d h:i:s'),
                         ]);
-                        return $this->sendWa($driver_id, $id_order_driver);
+
+                        // Send Wa to GA
+                        $get_ga = DB::table('users')
+                            ->join('employee', 'users.id', '=', 'employee.id_users')
+                            ->where('employee.user_job_status', '=', 'GA')
+                            ->where('users.deleted_at', '=', NULL)->get();
+                        foreach ($get_ga as $item_ga) {
+                            $wa_num = $item_ga->user_phone;
+                        }
+
+                        $get_driver = DB::table('order_driver')
+                            ->join('detail_order_driver', 'detail_order_driver.id_order_driver', '=', 'order_driver.id_order_driver')
+                            ->join('tbl_driver', 'tbl_driver.id_tbl_driver', '=', 'order_driver.id_tbl_driver')
+                            ->join('users', 'users.id', '=', 'tbl_driver.id_driver')
+                            ->join('employee', 'employee.id_users', '=', 'users.id')
+                            ->where('order_driver.id_order_driver', '=', $id_order_driver)
+                            ->get();
+                        foreach ($get_driver as $item_driver) {
+                            $driver_name = $item_driver->name;
+                        }
+
+                        $get_detail_order = DB::table('order_driver')
+                            ->join('detail_order_driver', 'detail_order_driver.id_order_driver', '=', 'order_driver.id_order_driver')
+                            ->join('users', 'users.id', '=', 'order_driver.id_users')
+                            ->where('order_driver.id_order_driver', '=', $id_order_driver)
+                            ->get();
+                        foreach ($get_detail_order as $item_order) {
+                            $nama_request = $item_order->name;
+                            $jenis = $item_order->item_type;
+                            $desc = $item_order->note_sender;
+                            $add_pick = $item_order->pick_address;
+                            $add_dest = $item_order->destination_address;
+                            $dep_time = $item_order->order_pick_up_date . " " . $item_order->order_pick_up_time;
+                            $max_time = $item_order->order_arrive_date . " " . $item_order->order_arrive_time;
+                        }
+                        $message =
+                            '⭐ Pesanan Baru Order Driver ⭐' . "\n\n" .
+                            '1. Nama User : ' . $nama_request . "\n" .
+                            '2. Nama Driver : ' . $driver_name . "\n" .
+                            '3. Waktu Berangkat : ' . $dep_time . "\n" .
+                            '4. Jenis : ' . $jenis . "\n" .
+                            '5. Deskripsi : ' . $desc . "\n" .
+                            '6. Alamat Pickup : ' . $add_pick . "\n" .
+                            '7. Alamat Tujuan : ' . $add_dest . "\n" .
+                            '8. Maksimal Waktu Sampai : ' . $max_time . "\n" .
+                            'Segera Check orderan Driver terbaru di https:://scheduling-app.inlingua.co.id ';
+                        $no_wa = $wa_num;
+                        $token = 'vVg3VwUmzcTxGy3kBzo6';
+
+                        $curl = curl_init();
+
+                        curl_setopt_array($curl, array(
+                            CURLOPT_URL => 'https://api.fonnte.com/send',
+                            CURLOPT_RETURNTRANSFER => true,
+                            CURLOPT_ENCODING => '',
+                            CURLOPT_MAXREDIRS => 10,
+                            CURLOPT_TIMEOUT => 0,
+                            CURLOPT_FOLLOWLOCATION => true,
+                            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                            CURLOPT_CUSTOMREQUEST => 'POST',
+                            CURLOPT_POSTFIELDS => array(
+                                'target' => $no_wa,
+                                'message' => $message,
+                                'countryCode' => '62', //optional
+                            ),
+                            CURLOPT_HTTPHEADER => array(
+                                'Authorization: ' . $token //change TOKEN to your actual token
+                            ),
+                        ));
+
+                        $response = curl_exec($curl);
+                        if (curl_errno($curl)) {
+                            $error_msg = curl_error($curl);
+                        }
+                        curl_close($curl);
+
+                        if (isset($error_msg)) {
+                            echo $error_msg;
+                        }
+
+                        Alert::success('Success', 'Sending Order Details to GA !!');
+                        return redirect()->route('index_driver');
                     }
                 }
             }
         }
     }
 
-    public function sendWa($driver_id, $id_order_driver)
+    public function approve_driver(Request $request)
+    {
+        $order_id = $request->txt_id_order;
+        $status = $request->btn_app;
+
+        if ($status == "approve_order") {
+            $order_update_app = OrderDriver::where('id_order_driver', '=', $order_id)->first();
+            $order_update_app->update([
+                'status_order_driver'   => "1",
+                'updated_at'            => date('Y-m-d h:i:s')
+            ]);
+            return $this->sendWa($order_id);
+        } else if ($status == "reject_order") {
+            $order_update_rej = OrderDriver::where('id_order_driver', '=', $order_id)->first();
+            $order_update_rej->update([
+                'status_order_driver'   => "2",
+                'updated_at'            => date('Y-m-d h:i:s')
+            ]);
+
+            Alert::success('Success', 'Order Rejected & Return Order to User !!');
+            return redirect()->route('index_driver');
+        }
+    }
+
+    public function sendWa($order_id)
     {
 
         $order_pick_date = date('Y-m-d');
@@ -276,7 +385,7 @@ class DriverController extends Controller
             ->join('tbl_driver', 'tbl_driver.id_tbl_driver', '=', 'order_driver.id_tbl_driver')
             ->join('users', 'users.id', '=', 'tbl_driver.id_driver')
             ->join('employee', 'employee.id_users', '=', 'users.id')
-            ->where('tbl_driver.id_tbl_driver', '=', $driver_id)
+            ->where('order_driver.id_order_driver', '=', $order_id)
             ->get();
         foreach ($get_driver as $item_driver) {
             $wa_num = $item_driver->user_phone;
@@ -284,13 +393,13 @@ class DriverController extends Controller
         $get_detail_order = DB::table('order_driver')
             ->join('detail_order_driver', 'detail_order_driver.id_order_driver', '=', 'order_driver.id_order_driver')
             ->join('users', 'users.id', '=', 'order_driver.id_users')
-            ->where('order_driver.id_order_driver', '=', $id_order_driver)
+            ->where('order_driver.id_order_driver', '=', $order_id)
             ->get();
         foreach ($get_detail_order as $item_order) {
             $nama_request = $item_order->name;
             $jenis = $item_order->item_type;
             $desc = $item_order->note_sender;
-            $add_pick = "inlingua";
+            $add_pick = $item_order->pick_address;
             $add_dest = $item_order->destination_address;
             $dep_time = $item_order->order_pick_up_date . " " . $item_order->order_pick_up_time;
             $max_time = $item_order->order_arrive_date . " " . $item_order->order_arrive_time;
@@ -338,9 +447,10 @@ class DriverController extends Controller
             echo $error_msg;
         }
         // echo $response;
-        Alert::success('Success', 'The order has been sent to the Driver');
-        return redirect()->route('create_book_driver');
+        Alert::success('Success', 'Order Approved & Sending Details to Driver !!');
+        return redirect()->route('index_driver');
     }
+
 
     /**
      * Display the specified resource.

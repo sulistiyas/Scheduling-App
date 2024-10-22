@@ -17,6 +17,7 @@ class DetailOrderMessenger extends Model
         'item_type',
         'order_pick_up_date',
         'order_pick_up_time',
+        'pick_address',
         'note_sender',
         'order_arrive_date',
         'order_arrive_time',

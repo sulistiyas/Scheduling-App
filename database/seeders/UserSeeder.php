@@ -28,7 +28,7 @@ class UserSeeder extends Seeder
                 'id' => 2,
                 'name' => 'Isnaini Nur Pramesty',
                 'email' => 'pramesnain@gmail.com',
-                'password' => Hash::make('semangat45'),
+                'password' => Hash::make('semangat'),
                 'user_level'    => '1',
                 'created_at'   => date('Y-m-d'),
                 'updated_at'   => date('Y-m-d'),

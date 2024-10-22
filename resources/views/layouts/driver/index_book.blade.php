@@ -68,14 +68,24 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="form-group">
-                                    <label for="opt_item_type">Item Type</label>
-                                    <select name="item_type" id="inputItemType" class="form-control select2bs4" required>
-                                      <option value="People">People</option>
-                                      <option value="Office Supplies">Office Supplies</option>
-                                      <option value="Documents">Documents</option>
-                                      <option value="Etc">Etc</option>
-                                    </select>
+                                <div class="row">
+                                  <div class="col-6">
+                                    <div class="form-group">
+                                      <label for="opt_item_type">Item Type</label>
+                                      <select name="item_type" id="inputItemType" class="form-control select2bs4" required>
+                                        <option value="People">People</option>
+                                        <option value="Office Supplies">Office Supplies</option>
+                                        <option value="Documents">Documents</option>
+                                        <option value="Etc">Etc</option>
+                                      </select>
+                                    </div>
+                                  </div>
+                                  <div class="col-6">
+                                    <div class="form-group">
+                                      <label for="txt_pick">Pick Up Address</label>
+                                      <input type="text" class="form-control" id="txt_pick" name="txt_pick" placeholder="Jl....." required>
+                                    </div>
+                                  </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-6">

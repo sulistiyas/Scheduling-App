@@ -241,10 +241,11 @@ class MessengerController extends Controller
                             $id_order_messenger = $items->id_order_messenger;
                         }
                         DetailOrderMessenger::create([
-                            'id_order_messenger'       => $id_order_messenger,
+                            'id_order_messenger'    => $id_order_messenger,
                             'item_type'             => $request->item_type,
                             'order_pick_up_date'    => $request->inputOrderPickUpDate,
                             'order_pick_up_time'    => $request->inputOrderPickUpTime,
+                            'pick_address'          => $request->txt_pick,
                             'note_sender'           => $request->txt_note,
                             'order_arrive_date'     => $request->arrive_date,
                             'order_arrive_time'     => $request->arrive_time,
@@ -253,8 +254,87 @@ class MessengerController extends Controller
                             'created_at'            => date('Y-m-d h:i:s'),
                             'updated_at'            => date('Y-m-d h:i:s'),
                         ]);
-                        return $this->sendWaMessenger($messenger_id, $id_order_messenger);
-                        Alert::success('Success', 'The order has been sent to the Messenger');
+                        // return $this->sendWaMessenger($messenger_id, $id_order_messenger);
+                        // Send Wa to GA
+                        $get_ga = DB::table('users')
+                            ->join('employee', 'users.id', '=', 'employee.id_users')
+                            ->where('employee.user_job_status', '=', 'GA')
+                            ->where('users.deleted_at', '=', NULL)->get();
+                        foreach ($get_ga as $item_ga) {
+                            $wa_num = $item_ga->user_phone;
+                        }
+
+                        $get_messenger = DB::table('order_messenger')
+                            ->join('detail_order_messenger', 'detail_order_messenger.id_order_messenger', '=', 'order_messenger.id_order_messenger')
+                            ->join('tbl_messenger', 'tbl_messenger.id_tbl_messenger', '=', 'order_messenger.id_tbl_messenger')
+                            ->join('users', 'users.id', '=', 'tbl_messenger.id_messenger')
+                            ->join('employee', 'employee.id_users', '=', 'users.id')
+                            ->where('order_messenger.id_order_messenger', '=', $id_order_messenger)
+                            ->get();
+                        foreach ($get_messenger as $item_messenger) {
+                            $messenger_name = $item_messenger->name;
+                        }
+
+                        $get_detail_order = DB::table('order_messenger')
+                            ->join('detail_order_messenger', 'detail_order_messenger.id_order_messenger', '=', 'order_messenger.id_order_messenger')
+                            ->join('users', 'users.id', '=', 'order_messenger.id_users')
+                            ->where('order_messenger.id_order_messenger', '=', $id_order_messenger)
+                            ->get();
+                        foreach ($get_detail_order as $item_order) {
+                            $nama_request = $item_order->name;
+                            $jenis = $item_order->item_type;
+                            $desc = $item_order->note_sender;
+                            $add_pick = $item_order->pick_address;
+                            $add_dest = $item_order->destination_address;
+                            $dep_time = $item_order->order_pick_up_date . " " . $item_order->order_pick_up_time;
+                            $max_time = $item_order->order_arrive_date . " " . $item_order->order_arrive_time;
+                        }
+                        $message =
+                            '⭐ Pesanan Baru Order Messenger ⭐' . "\n\n" .
+                            '1. Nama User : ' . $nama_request . "\n" .
+                            '2. Nama Messenger : ' . $messenger_name . "\n" .
+                            '3. Waktu Berangkat : ' . $dep_time . "\n" .
+                            '4. Jenis : ' . $jenis . "\n" .
+                            '5. Deskripsi : ' . $desc . "\n" .
+                            '6. Alamat Pickup : ' . $add_pick . "\n" .
+                            '7. Alamat Tujuan : ' . $add_dest . "\n" .
+                            '8. Maksimal Waktu Sampai : ' . $max_time . "\n" .
+                            'Segera Check orderan Messenger terbaru di https:://scheduling-app.inlingua.co.id ';
+                        $no_wa = $wa_num;
+                        $token = 'vVg3VwUmzcTxGy3kBzo6';
+
+                        $curl = curl_init();
+
+                        curl_setopt_array($curl, array(
+                            CURLOPT_URL => 'https://api.fonnte.com/send',
+                            CURLOPT_RETURNTRANSFER => true,
+                            CURLOPT_ENCODING => '',
+                            CURLOPT_MAXREDIRS => 10,
+                            CURLOPT_TIMEOUT => 0,
+                            CURLOPT_FOLLOWLOCATION => true,
+                            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                            CURLOPT_CUSTOMREQUEST => 'POST',
+                            CURLOPT_POSTFIELDS => array(
+                                // 'target' => '082110873602',
+                                'target' => $no_wa,
+                                'message' => $message,
+                                'countryCode' => '62', //optional
+                            ),
+                            CURLOPT_HTTPHEADER => array(
+                                'Authorization: ' . $token //change TOKEN to your actual token
+                            ),
+                        ));
+
+                        $response = curl_exec($curl);
+                        if (curl_errno($curl)) {
+                            $error_msg = curl_error($curl);
+                        }
+                        curl_close($curl);
+
+                        if (isset($error_msg)) {
+                            echo $error_msg;
+                        }
+                        Alert::success('Success', 'The order has been sent to GA');
                         return redirect()->route('create_book_messenger');
                     }
                 }
@@ -262,7 +342,31 @@ class MessengerController extends Controller
         }
     }
 
-    public function sendWaMessenger($messenger_id, $id_order_messenger)
+    public function approve_messenger(Request $request)
+    {
+        $order_id = $request->txt_id_order;
+        $status = $request->btn_app;
+
+        if ($status == "approve_order") {
+            $order_update_app = OrderMessenger::where('id_order_messenger', '=', $order_id)->first();
+            $order_update_app->update([
+                'status_order_messenger'   => "1",
+                'updated_at'            => date('Y-m-d h:i:s')
+            ]);
+            return $this->sendWaMessenger($order_id);
+        } else if ($status == "reject_order") {
+            $order_update_rej = OrderMessenger::where('id_order_messenger', '=', $order_id)->first();
+            $order_update_rej->update([
+                'status_order_messenger'   => "2",
+                'updated_at'            => date('Y-m-d h:i:s')
+            ]);
+
+            Alert::success('Success', 'Order Rejected & Return Order to User !!');
+            return redirect()->route('index_schedule_messenger');
+        }
+    }
+
+    public function sendWaMessenger($order_id)
     {
 
         $get_messenger = DB::table('order_messenger')
@@ -270,7 +374,7 @@ class MessengerController extends Controller
             ->join('tbl_messenger', 'tbl_messenger.id_tbl_messenger', '=', 'order_messenger.id_tbl_messenger')
             ->join('users', 'users.id', '=', 'tbl_messenger.id_messenger')
             ->join('employee', 'employee.id_users', '=', 'users.id')
-            ->where('tbl_messenger.id_tbl_messenger', '=', $messenger_id)
+            ->where('order_messenger.id_order_messenger', '=', $order_id)
             ->get();
         foreach ($get_messenger as $item_messenger) {
             $wa_num = $item_messenger->user_phone;
@@ -278,13 +382,13 @@ class MessengerController extends Controller
         $get_detail_order = DB::table('order_messenger')
             ->join('detail_order_messenger', 'detail_order_messenger.id_order_messenger', '=', 'order_messenger.id_order_messenger')
             ->join('users', 'users.id', '=', 'order_messenger.id_users')
-            ->where('order_messenger.id_order_messenger', '=', $id_order_messenger)
+            ->where('order_messenger.id_order_messenger', '=', $order_id)
             ->get();
         foreach ($get_detail_order as $item_order) {
             $nama_request = $item_order->name;
             $jenis = $item_order->item_type;
             $desc = $item_order->note_sender;
-            $add_pick = "inlingua";
+            $add_pick = $item_order->pick_address;
             $add_dest = $item_order->destination_address;
             $dep_time = $item_order->order_pick_up_date . " " . $item_order->order_pick_up_time;
             $max_time = $item_order->order_arrive_date . " " . $item_order->order_arrive_time;
@@ -313,6 +417,7 @@ class MessengerController extends Controller
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_POSTFIELDS => array(
+                // 'target' => '082110873602',
                 'target' => $no_wa,
                 'message' => $message,
                 'countryCode' => '62', //optional
@@ -332,8 +437,8 @@ class MessengerController extends Controller
             echo $error_msg;
         }
         // echo $message;
-        Alert::success('Success', 'The order has been sent to the Driver');
-        return redirect()->route('create_book_driver');
+        Alert::success('Success', 'Order Approved & Sending Details to Messenger !!');
+        return redirect()->route('index_schedule_messenger');
     }
 
     /**

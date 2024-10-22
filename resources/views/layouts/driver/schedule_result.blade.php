@@ -41,7 +41,10 @@
                     </div>
                 </div>
             </form><br>
-            <h2 class="text-center display-6">Driver : {{ $item_driver->name }}</h2><br>
+            @foreach ($driver_name as $item_name)
+                
+            @endforeach
+            <h2 class="text-center display-6">Driver : {{ $item_name->name }}</h2><br>
             <div class="row">
                 <div class="col-md-12">
                     <div class="card card-primary card-tabs">
@@ -121,9 +124,21 @@
                                                                             Details
                                                                         </button>
                                                                     <div class="dropdown-divider"></div>
-                                                                    {{-- <a class="dropdown-item" href=""></a> --}}
-                                                                    <button class="dropdown-item toastrDefaultError">Approve Order</button>
-                                                                    <button class="dropdown-item toastrDefaultError"><code>Reject Order</code></button>
+                                                                        @if (Auth::user()->name == "Adelia Wiratna")
+                                                                            {{-- <a class="dropdown-item" href=""></a> --}}
+                                                                            <form onsubmit="return confirm('Are you sure you want to APPROVE this request ?');" action="{{ route('approve_driver') }}" method="POST">
+                                                                                @csrf
+                                                                                <input type="hidden" name="txt_id_order" id="txt_order_id" value="{{ $item->id_order_driver }}" readonly>
+                                                                                <button class="dropdown-item toastrDefaultError" name="btn_app" value="approve_order">Approve Order</button>
+                                                                            </form>
+
+                                                                            <form onsubmit="return confirm('Are you sure you want to Reject this request ?');" action="{{ route('approve_driver') }}" method="POST">
+                                                                                @csrf
+                                                                                <input type="hidden" name="txt_id_order" id="txt_order_id" value="{{ $item->id_order_driver }}" readonly>
+                                                                                <button class="dropdown-item toastrDefaultError" name="btn_app" value="reject_order"><code>Reject Order</code></button>
+                                                                            </form>
+                                                                        @else
+                                                                        @endif
                                                                     </div>
                                                                 </div>
                                                             </td>
@@ -145,10 +160,11 @@
                                                 <thead>
                                                   <tr>
                                                       <th>#</th>
-                                                      <th>Client</th>
-                                                      <th>Must Arrive</th>
                                                       <th>Requester</th>
                                                       <th>PickUp Time</th>
+                                                      <th>Client</th>
+                                                      <th>Must Arrive</th>
+                                                      <th>Order Status</th>
                                                       <th><i class="fas fa-cog"></i></th>
                                                   </tr>
                                                 </thead>
@@ -171,6 +187,36 @@
                                                                   Order Completed
                                                               @endif
                                                             </td>
+                                                            <td>
+                                                                {{-- data-url="{{ route('show_modal_pr_admin',['id'=>$item_pr->pr_no])}}" --}}
+                                                                <div class="btn-group">
+                                                                    <button type="button" class="btn btn-flat" data-toggle="dropdown">
+                                                                        <span class="sr-only">Toggle Dropdown</span>
+                                                                        <i class="fas fa-ellipsis-v"></i>
+                                                                    </button>
+                                                                    <div class="dropdown-menu" role="menu">
+                                                                        <button type="button" class="dropdown-item" title="Show Data" data-toggle="modal" data-target="#modal_pr_show" id="getPR" >
+                                                                            Details
+                                                                        </button>
+                                                                    <div class="dropdown-divider"></div>
+                                                                        @if (Auth::user()->name == "Adelia Wiratna")
+                                                                            {{-- <a class="dropdown-item" href=""></a> --}}
+                                                                            <form onsubmit="return confirm('Are you sure you want to APPROVE this request ?');" action="{{ route('approve_driver') }}" method="POST">
+                                                                                @csrf
+                                                                                <input type="hidden" name="txt_id_order" id="txt_order_id" value="{{ $item->id_order_driver }}" readonly>
+                                                                                <button class="dropdown-item toastrDefaultError" name="btn_app" value="approve_order">Approve Order</button>
+                                                                            </form>
+
+                                                                            <form onsubmit="return confirm('Are you sure you want to Reject this request ?');" action="{{ route('approve_driver') }}" method="POST">
+                                                                                @csrf
+                                                                                <input type="hidden" name="txt_id_order" id="txt_order_id" value="{{ $item->id_order_driver }}" readonly>
+                                                                                <button class="dropdown-item toastrDefaultError" name="btn_app" value="reject_order"><code>Reject Order</code></button>
+                                                                            </form>
+                                                                        @else
+                                                                        @endif
+                                                                    </div>
+                                                                </div>
+                                                            </td>
                                                         </tr>
                                                     @endforeach
                                                 </tbody>
@@ -189,10 +235,11 @@
                                                 <thead>
                                                   <tr>
                                                       <th>#</th>
-                                                      <th>Client</th>
-                                                      <th>Must Arrive</th>
                                                       <th>Requester</th>
                                                       <th>PickUp Time</th>
+                                                      <th>Client</th>
+                                                      <th>Must Arrive</th>
+                                                      <th>Order Status</th>
                                                       <th><i class="fas fa-cog"></i></th>
                                                   </tr>
                                                 </thead>
@@ -215,6 +262,9 @@
                                                                   Order Completed
                                                               @endif
                                                             </td>
+                                                            <td>
+                                                                
+                                                            </td>
                                                         </tr>
                                                     @endforeach
                                                 </tbody>
@@ -233,10 +283,11 @@
                                                 <thead>
                                                   <tr>
                                                       <th>#</th>
-                                                      <th>Client</th>
-                                                      <th>Must Arrive</th>
                                                       <th>Requester</th>
                                                       <th>PickUp Time</th>
+                                                      <th>Client</th>
+                                                      <th>Must Arrive</th>
+                                                      <th>Order Status</th>
                                                       <th><i class="fas fa-cog"></i></th>
                                                   </tr>
                                                 </thead>
@@ -259,6 +310,36 @@
                                                                   Order Completed
                                                               @endif
                                                             </td>
+                                                            <td>
+                                                                {{-- data-url="{{ route('show_modal_pr_admin',['id'=>$item_pr->pr_no])}}" --}}
+                                                                <div class="btn-group">
+                                                                    <button type="button" class="btn btn-flat" data-toggle="dropdown">
+                                                                        <span class="sr-only">Toggle Dropdown</span>
+                                                                        <i class="fas fa-ellipsis-v"></i>
+                                                                    </button>
+                                                                    <div class="dropdown-menu" role="menu">
+                                                                        <button type="button" class="dropdown-item" title="Show Data" data-toggle="modal" data-target="#modal_pr_show" id="getPR" >
+                                                                            Details
+                                                                        </button>
+                                                                    <div class="dropdown-divider"></div>
+                                                                        @if (Auth::user()->name == "Adelia Wiratna")
+                                                                            {{-- <a class="dropdown-item" href=""></a> --}}
+                                                                            <form onsubmit="return confirm('Are you sure you want to APPROVE this request ?');" action="{{ route('approve_driver') }}" method="POST">
+                                                                                @csrf
+                                                                                <input type="hidden" name="txt_id_order" id="txt_order_id" value="{{ $item->id_order_driver }}" readonly>
+                                                                                <button class="dropdown-item toastrDefaultError" name="btn_app" value="approve_order">Approve Order</button>
+                                                                            </form>
+
+                                                                            <form onsubmit="return confirm('Are you sure you want to Reject this request ?');" action="{{ route('approve_driver') }}" method="POST">
+                                                                                @csrf
+                                                                                <input type="hidden" name="txt_id_order" id="txt_order_id" value="{{ $item->id_order_driver }}" readonly>
+                                                                                <button class="dropdown-item toastrDefaultError" name="btn_app" value="reject_order"><code>Reject Order</code></button>
+                                                                            </form>
+                                                                        @else
+                                                                        @endif
+                                                                    </div>
+                                                                </div>
+                                                            </td>
                                                         </tr>
                                                     @endforeach
                                                 </tbody>
@@ -277,10 +358,11 @@
                                                 <thead>
                                                   <tr>
                                                       <th>#</th>
-                                                      <th>Client</th>
-                                                      <th>Must Arrive</th>
                                                       <th>Requester</th>
                                                       <th>PickUp Time</th>
+                                                      <th>Client</th>
+                                                      <th>Must Arrive</th>
+                                                      <th>Order Status</th>
                                                       <th><i class="fas fa-cog"></i></th>
                                                   </tr>
                                                 </thead>
@@ -321,10 +403,11 @@
                                                 <thead>
                                                   <tr>
                                                       <th>#</th>
-                                                      <th>Client</th>
-                                                      <th>Must Arrive</th>
                                                       <th>Requester</th>
                                                       <th>PickUp Time</th>
+                                                      <th>Client</th>
+                                                      <th>Must Arrive</th>
+                                                      <th>Order Status</th>
                                                       <th><i class="fas fa-cog"></i></th>
                                                   </tr>
                                                 </thead>
@@ -347,6 +430,36 @@
                                                                   Order Completed
                                                               @endif
                                                             </td>
+                                                            <td>
+                                                                {{-- data-url="{{ route('show_modal_pr_admin',['id'=>$item_pr->pr_no])}}" --}}
+                                                                <div class="btn-group">
+                                                                    <button type="button" class="btn btn-flat" data-toggle="dropdown">
+                                                                        <span class="sr-only">Toggle Dropdown</span>
+                                                                        <i class="fas fa-ellipsis-v"></i>
+                                                                    </button>
+                                                                    <div class="dropdown-menu" role="menu">
+                                                                        <button type="button" class="dropdown-item" title="Show Data" data-toggle="modal" data-target="#modal_pr_show" id="getPR" >
+                                                                            Details
+                                                                        </button>
+                                                                    <div class="dropdown-divider"></div>
+                                                                        @if (Auth::user()->name == "Adelia Wiratna")
+                                                                            {{-- <a class="dropdown-item" href=""></a> --}}
+                                                                            <form onsubmit="return confirm('Are you sure you want to APPROVE this request ?');" action="{{ route('approve_driver') }}" method="POST">
+                                                                                @csrf
+                                                                                <input type="hidden" name="txt_id_order" id="txt_order_id" value="{{ $item->id_order_driver }}" readonly>
+                                                                                <button class="dropdown-item toastrDefaultError" name="btn_app" value="approve_order">Approve Order</button>
+                                                                            </form>
+
+                                                                            <form onsubmit="return confirm('Are you sure you want to Reject this request ?');" action="{{ route('approve_driver') }}" method="POST">
+                                                                                @csrf
+                                                                                <input type="hidden" name="txt_id_order" id="txt_order_id" value="{{ $item->id_order_driver }}" readonly>
+                                                                                <button class="dropdown-item toastrDefaultError" name="btn_app" value="reject_order"><code>Reject Order</code></button>
+                                                                            </form>
+                                                                        @else
+                                                                        @endif
+                                                                    </div>
+                                                                </div>
+                                                            </td>
                                                         </tr>
                                                     @endforeach
                                                 </tbody>
@@ -365,10 +478,11 @@
                                                 <thead>
                                                   <tr>
                                                       <th>#</th>
-                                                      <th>Client</th>
-                                                      <th>Must Arrive</th>
                                                       <th>Requester</th>
                                                       <th>PickUp Time</th>
+                                                      <th>Client</th>
+                                                      <th>Must Arrive</th>
+                                                      <th>Order Status</th>
                                                       <th><i class="fas fa-cog"></i></th>
                                                   </tr>
                                                 </thead>
@@ -390,6 +504,36 @@
                                                               @elseif ( $item->status_order_driver == 1)
                                                                   Order Completed
                                                               @endif
+                                                            </td>
+                                                            <td>
+                                                                {{-- data-url="{{ route('show_modal_pr_admin',['id'=>$item_pr->pr_no])}}" --}}
+                                                                <div class="btn-group">
+                                                                    <button type="button" class="btn btn-flat" data-toggle="dropdown">
+                                                                        <span class="sr-only">Toggle Dropdown</span>
+                                                                        <i class="fas fa-ellipsis-v"></i>
+                                                                    </button>
+                                                                    <div class="dropdown-menu" role="menu">
+                                                                        <button type="button" class="dropdown-item" title="Show Data" data-toggle="modal" data-target="#modal_pr_show" id="getPR" >
+                                                                            Details
+                                                                        </button>
+                                                                    <div class="dropdown-divider"></div>
+                                                                        @if (Auth::user()->name == "Adelia Wiratna")
+                                                                            {{-- <a class="dropdown-item" href=""></a> --}}
+                                                                            <form onsubmit="return confirm('Are you sure you want to APPROVE this request ?');" action="{{ route('approve_driver') }}" method="POST">
+                                                                                @csrf
+                                                                                <input type="hidden" name="txt_id_order" id="txt_order_id" value="{{ $item->id_order_driver }}" readonly>
+                                                                                <button class="dropdown-item toastrDefaultError" name="btn_app" value="approve_order">Approve Order</button>
+                                                                            </form>
+
+                                                                            <form onsubmit="return confirm('Are you sure you want to Reject this request ?');" action="{{ route('approve_driver') }}" method="POST">
+                                                                                @csrf
+                                                                                <input type="hidden" name="txt_id_order" id="txt_order_id" value="{{ $item->id_order_driver }}" readonly>
+                                                                                <button class="dropdown-item toastrDefaultError" name="btn_app" value="reject_order"><code>Reject Order</code></button>
+                                                                            </form>
+                                                                        @else
+                                                                        @endif
+                                                                    </div>
+                                                                </div>
                                                             </td>
                                                         </tr>
                                                     @endforeach

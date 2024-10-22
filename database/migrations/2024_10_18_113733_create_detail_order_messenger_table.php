@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('item_type');
             $table->string('order_pick_up_date');
             $table->string('order_pick_up_time');
+            $table->string('pick_address')->nullable();
             $table->string('note_sender')->nullable();
             $table->string('order_arrive_date');
             $table->string('order_arrive_time');
