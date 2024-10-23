@@ -37,7 +37,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
     Route::post('/Messenger/Schedule/Result', [MessengerController::class, 'index_result_messenger'])->name('index_result_messenger');
     Route::get('/Messenger/Book', [MessengerController::class, 'create_book_messenger'])->name('create_book_messenger');
     Route::post('/Messenger/Book/Store', [MessengerController::class, 'store_book_messenger'])->name('store_book_messenger');
-    Route::post('/Driver/Book/Status', [MessengerController::class, 'approve_messenger'])->name('approve_messenger');
+    Route::post('/Messenger/Book/Status', [MessengerController::class, 'approve_messenger'])->name('approve_messenger');
 
     Route::get('/Messenger/Send/WA', [MessengerController::class, 'sendWaMessenger'])->name('sendWaMessenger');
 

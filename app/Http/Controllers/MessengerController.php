@@ -346,6 +346,7 @@ class MessengerController extends Controller
     {
         $order_id = $request->txt_id_order;
         $status = $request->btn_app;
+        $reject_notes = $request->txt_notes;
 
         if ($status == "approve_order") {
             $order_update_app = OrderMessenger::where('id_order_messenger', '=', $order_id)->first();
@@ -354,15 +355,14 @@ class MessengerController extends Controller
                 'updated_at'            => date('Y-m-d h:i:s')
             ]);
             return $this->sendWaMessenger($order_id);
+            return $this->sendWaApprovedMessenger($order_id);
         } else if ($status == "reject_order") {
             $order_update_rej = OrderMessenger::where('id_order_messenger', '=', $order_id)->first();
             $order_update_rej->update([
                 'status_order_messenger'   => "2",
                 'updated_at'            => date('Y-m-d h:i:s')
             ]);
-
-            Alert::success('Success', 'Order Rejected & Return Order to User !!');
-            return redirect()->route('index_schedule_messenger');
+            return $this->sendWaRejectionMessenger($order_id, $reject_notes);
         }
     }
 
@@ -438,6 +438,111 @@ class MessengerController extends Controller
         }
         // echo $message;
         Alert::success('Success', 'Order Approved & Sending Details to Messenger !!');
+        return redirect()->route('index_schedule_messenger');
+    }
+
+    // Approved
+    public function sendWaApprovedMessenger($order_id)
+    {
+        $get_user = DB::table('order_messenger')
+            ->join('detail_order_messenger', 'detail_order_messenger.id_order_messenger', '=', 'order_messenger.id_order_messenger')
+            ->join('users', 'users.id', '=', 'order_messenger.id_users')
+            ->join('employee', 'employee.id_users', '=', 'users.id')
+            ->where('order_messenger.id_order_messenger', '=', $order_id)
+            ->get();
+        foreach ($get_user as $item_user) {
+            $wa_num = $item_user->user_phone;
+        }
+        $message =
+            '⭐ Your Order are Approved ⭐';
+        $no_wa = $wa_num;
+        $token = 'vVg3VwUmzcTxGy3kBzo6';
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://api.fonnte.com/send',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => array(
+                'target' => $no_wa,
+                'message' => $message,
+                'countryCode' => '62', //optional
+            ),
+            CURLOPT_HTTPHEADER => array(
+                'Authorization: ' . $token //change TOKEN to your actual token
+            ),
+        ));
+
+        $response = curl_exec($curl);
+        if (curl_errno($curl)) {
+            $error_msg = curl_error($curl);
+        }
+        curl_close($curl);
+
+        if (isset($error_msg)) {
+            echo $error_msg;
+        }
+        // echo $response;
+        Alert::success('Success', 'Order Rejected!!');
+        return redirect()->route('index_messenger');
+    }
+    // Rejected
+    public function sendWaRejectionMessenger($order_id, $reject_notes)
+    {
+        $get_user = DB::table('order_messenger')
+            ->join('detail_order_messenger', 'detail_order_messenger.id_order_messenger', '=', 'order_messenger.id_order_messenger')
+            ->join('users', 'users.id', '=', 'order_messenger.id_users')
+            ->join('employee', 'employee.id_users', '=', 'users.id')
+            ->where('order_messenger.id_order_messenger', '=', $order_id)
+            ->get();
+        foreach ($get_user as $item_user) {
+            $wa_num = $item_user->user_phone;
+        }
+        $message =
+            '⭐ Your Order are Rejected ⭐' . "\n\n" .
+            'Reason : ' . $reject_notes . "\n" .
+            'Please submit new Order!!';
+        $no_wa = $wa_num;
+        $token = 'vVg3VwUmzcTxGy3kBzo6';
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://api.fonnte.com/send',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => array(
+                'target' => $no_wa,
+                'message' => $message,
+                'countryCode' => '62', //optional
+            ),
+            CURLOPT_HTTPHEADER => array(
+                'Authorization: ' . $token //change TOKEN to your actual token
+            ),
+        ));
+
+        $response = curl_exec($curl);
+        if (curl_errno($curl)) {
+            $error_msg = curl_error($curl);
+        }
+        curl_close($curl);
+
+        if (isset($error_msg)) {
+            echo $error_msg;
+        }
+        // echo $response;
+        Alert::success('Success', 'Order Rejected & Return Order to User !!');
         return redirect()->route('index_schedule_messenger');
     }
 

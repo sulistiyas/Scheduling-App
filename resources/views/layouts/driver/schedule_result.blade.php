@@ -131,12 +131,7 @@
                                                                                 <input type="hidden" name="txt_id_order" id="txt_order_id" value="{{ $item->id_order_driver }}" readonly>
                                                                                 <button class="dropdown-item toastrDefaultError" name="btn_app" value="approve_order">Approve Order</button>
                                                                             </form>
-
-                                                                            <form onsubmit="return confirm('Are you sure you want to Reject this request ?');" action="{{ route('approve_driver') }}" method="POST">
-                                                                                @csrf
-                                                                                <input type="hidden" name="txt_id_order" id="txt_order_id" value="{{ $item->id_order_driver }}" readonly>
-                                                                                <button class="dropdown-item toastrDefaultError" name="btn_app" value="reject_order"><code>Reject Order</code></button>
-                                                                            </form>
+                                                                            <button class="dropdown-item" name="btn_rej" data-toggle="modal" data-target="#modal_reject_driver"><code>Reject Order</code></button>
                                                                         @else
                                                                         @endif
                                                                     </div>
@@ -207,11 +202,7 @@
                                                                                 <button class="dropdown-item toastrDefaultError" name="btn_app" value="approve_order">Approve Order</button>
                                                                             </form>
 
-                                                                            <form onsubmit="return confirm('Are you sure you want to Reject this request ?');" action="{{ route('approve_driver') }}" method="POST">
-                                                                                @csrf
-                                                                                <input type="hidden" name="txt_id_order" id="txt_order_id" value="{{ $item->id_order_driver }}" readonly>
-                                                                                <button class="dropdown-item toastrDefaultError" name="btn_app" value="reject_order"><code>Reject Order</code></button>
-                                                                            </form>
+                                                                            <button class="dropdown-item" name="btn_rej" data-toggle="modal" data-target="#modal_reject_driver"><code>Reject Order</code></button>
                                                                         @else
                                                                         @endif
                                                                     </div>
@@ -263,7 +254,30 @@
                                                               @endif
                                                             </td>
                                                             <td>
-                                                                
+                                                                {{-- data-url="{{ route('show_modal_pr_admin',['id'=>$item_pr->pr_no])}}" --}}
+                                                                <div class="btn-group">
+                                                                    <button type="button" class="btn btn-flat" data-toggle="dropdown">
+                                                                        <span class="sr-only">Toggle Dropdown</span>
+                                                                        <i class="fas fa-ellipsis-v"></i>
+                                                                    </button>
+                                                                    <div class="dropdown-menu" role="menu">
+                                                                        <button type="button" class="dropdown-item" title="Show Data" data-toggle="modal" data-target="#modal_pr_show" id="getPR" >
+                                                                            Details
+                                                                        </button>
+                                                                    <div class="dropdown-divider"></div>
+                                                                        @if (Auth::user()->name == "Adelia Wiratna")
+                                                                            {{-- <a class="dropdown-item" href=""></a> --}}
+                                                                            <form onsubmit="return confirm('Are you sure you want to APPROVE this request ?');" action="{{ route('approve_driver') }}" method="POST">
+                                                                                @csrf
+                                                                                <input type="hidden" name="txt_id_order" id="txt_order_id" value="{{ $item->id_order_driver }}" readonly>
+                                                                                <button class="dropdown-item toastrDefaultError" name="btn_app" value="approve_order">Approve Order</button>
+                                                                            </form>
+
+                                                                            <button class="dropdown-item" name="btn_rej" data-toggle="modal" data-target="#modal_reject_driver"><code>Reject Order</code></button>
+                                                                        @else
+                                                                        @endif
+                                                                    </div>
+                                                                </div>
                                                             </td>
                                                         </tr>
                                                     @endforeach
@@ -330,11 +344,7 @@
                                                                                 <button class="dropdown-item toastrDefaultError" name="btn_app" value="approve_order">Approve Order</button>
                                                                             </form>
 
-                                                                            <form onsubmit="return confirm('Are you sure you want to Reject this request ?');" action="{{ route('approve_driver') }}" method="POST">
-                                                                                @csrf
-                                                                                <input type="hidden" name="txt_id_order" id="txt_order_id" value="{{ $item->id_order_driver }}" readonly>
-                                                                                <button class="dropdown-item toastrDefaultError" name="btn_app" value="reject_order"><code>Reject Order</code></button>
-                                                                            </form>
+                                                                            <button class="dropdown-item" name="btn_rej" data-toggle="modal" data-target="#modal_reject_driver"><code>Reject Order</code></button>
                                                                         @else
                                                                         @endif
                                                                     </div>
@@ -450,11 +460,7 @@
                                                                                 <button class="dropdown-item toastrDefaultError" name="btn_app" value="approve_order">Approve Order</button>
                                                                             </form>
 
-                                                                            <form onsubmit="return confirm('Are you sure you want to Reject this request ?');" action="{{ route('approve_driver') }}" method="POST">
-                                                                                @csrf
-                                                                                <input type="hidden" name="txt_id_order" id="txt_order_id" value="{{ $item->id_order_driver }}" readonly>
-                                                                                <button class="dropdown-item toastrDefaultError" name="btn_app" value="reject_order"><code>Reject Order</code></button>
-                                                                            </form>
+                                                                            <button class="dropdown-item" name="btn_rej" data-toggle="modal" data-target="#modal_reject_driver"><code>Reject Order</code></button>
                                                                         @else
                                                                         @endif
                                                                     </div>
@@ -525,11 +531,7 @@
                                                                                 <button class="dropdown-item toastrDefaultError" name="btn_app" value="approve_order">Approve Order</button>
                                                                             </form>
 
-                                                                            <form onsubmit="return confirm('Are you sure you want to Reject this request ?');" action="{{ route('approve_driver') }}" method="POST">
-                                                                                @csrf
-                                                                                <input type="hidden" name="txt_id_order" id="txt_order_id" value="{{ $item->id_order_driver }}" readonly>
-                                                                                <button class="dropdown-item toastrDefaultError" name="btn_app" value="reject_order"><code>Reject Order</code></button>
-                                                                            </form>
+                                                                            <button class="dropdown-item" name="btn_rej" data-toggle="modal" data-target="#modal_reject_driver"><code>Reject Order</code></button>
                                                                         @else
                                                                         @endif
                                                                     </div>
@@ -551,6 +553,36 @@
             </div>
         </div>
     </section>
+    <form onsubmit="return confirm('Are you sure you want to Reject this request ?');" action="{{ route('approve_driver') }}" method="POST" enctype="multipart/form-data" id="reject_order_driver" name="reject_order_driver">
+        @csrf
+        <div class="modal fade" id="modal_reject_driver">
+            <div class="modal-dialog modal-lg">
+              <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Rejection Notes</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label for="txt_notes">Notes</label>
+                                <input type="hidden" name="txt_id_order" id="txt_order_id" value="{{ $item->id_order_driver }}" readonly>
+                                <input type="text" name="txt_notes" id="txt_notes" class="form-control" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="submit" name="btn_app" value="reject_order" class="btn btn-primary">Submit</button>
+                </div>
+              </div>
+            </div>
+        </div>
+    </form>
 </div>
 @include('includes.footer')
 <script>

@@ -128,12 +128,7 @@
                                                                                 <input type="hidden" name="txt_id_order" id="txt_order_id" value="{{ $item->id_order_messenger }}" readonly>
                                                                                 <button class="dropdown-item toastrDefaultError" name="btn_app" value="approve_order">Approve Order</button>
                                                                             </form>
-
-                                                                            <form onsubmit="return confirm('Are you sure you want to Reject this request ?');" action="{{ route('approve_messenger') }}" method="POST">
-                                                                                @csrf
-                                                                                <input type="hidden" name="txt_id_order" id="txt_order_id" value="{{ $item->id_order_messenger }}" readonly>
-                                                                                <button class="dropdown-item toastrDefaultError" name="btn_app" value="reject_order"><code>Reject Order</code></button>
-                                                                            </form>
+                                                                            <button class="dropdown-item" name="btn_rej" data-toggle="modal" data-target="#modal_reject_messenger"><code>Reject Order</code></button>
                                                                         @else
                                                                         @endif
                                                                     </div>
@@ -203,12 +198,7 @@
                                                                                 <input type="hidden" name="txt_id_order" id="txt_order_id" value="{{ $item->id_order_messenger }}" readonly>
                                                                                 <button class="dropdown-item toastrDefaultError" name="btn_app" value="approve_order">Approve Order</button>
                                                                             </form>
-
-                                                                            <form onsubmit="return confirm('Are you sure you want to Reject this request ?');" action="{{ route('approve_messenger') }}" method="POST">
-                                                                                @csrf
-                                                                                <input type="hidden" name="txt_id_order" id="txt_order_id" value="{{ $item->id_order_messenger }}" readonly>
-                                                                                <button class="dropdown-item toastrDefaultError" name="btn_app" value="reject_order"><code>Reject Order</code></button>
-                                                                            </form>
+                                                                            <button class="dropdown-item" name="btn_rej" data-toggle="modal" data-target="#modal_reject_messenger"><code>Reject Order</code></button>
                                                                         @else
                                                                         @endif
                                                                     </div>
@@ -278,12 +268,7 @@
                                                                                 <input type="hidden" name="txt_id_order" id="txt_order_id" value="{{ $item->id_order_messenger }}" readonly>
                                                                                 <button class="dropdown-item toastrDefaultError" name="btn_app" value="approve_order">Approve Order</button>
                                                                             </form>
-
-                                                                            <form onsubmit="return confirm('Are you sure you want to Reject this request ?');" action="{{ route('approve_messenger') }}" method="POST">
-                                                                                @csrf
-                                                                                <input type="hidden" name="txt_id_order" id="txt_order_id" value="{{ $item->id_order_messenger }}" readonly>
-                                                                                <button class="dropdown-item toastrDefaultError" name="btn_app" value="reject_order"><code>Reject Order</code></button>
-                                                                            </form>
+                                                                            <button class="dropdown-item" name="btn_rej" data-toggle="modal" data-target="#modal_reject_messenger"><code>Reject Order</code></button>
                                                                         @else
                                                                         @endif
                                                                     </div>
@@ -353,12 +338,7 @@
                                                                                 <input type="hidden" name="txt_id_order" id="txt_order_id" value="{{ $item->id_order_messenger }}" readonly>
                                                                                 <button class="dropdown-item toastrDefaultError" name="btn_app" value="approve_order">Approve Order</button>
                                                                             </form>
-
-                                                                            <form onsubmit="return confirm('Are you sure you want to Reject this request ?');" action="{{ route('approve_messenger') }}" method="POST">
-                                                                                @csrf
-                                                                                <input type="hidden" name="txt_id_order" id="txt_order_id" value="{{ $item->id_order_messenger }}" readonly>
-                                                                                <button class="dropdown-item toastrDefaultError" name="btn_app" value="reject_order"><code>Reject Order</code></button>
-                                                                            </form>
+                                                                            <button class="dropdown-item" name="btn_rej" data-toggle="modal" data-target="#modal_reject_messenger"><code>Reject Order</code></button>
                                                                         @else
                                                                         @endif
                                                                     </div>
@@ -428,12 +408,7 @@
                                                                                 <input type="hidden" name="txt_id_order" id="txt_order_id" value="{{ $item->id_order_messenger }}" readonly>
                                                                                 <button class="dropdown-item toastrDefaultError" name="btn_app" value="approve_order">Approve Order</button>
                                                                             </form>
-
-                                                                            <form onsubmit="return confirm('Are you sure you want to Reject this request ?');" action="{{ route('approve_messenger') }}" method="POST">
-                                                                                @csrf
-                                                                                <input type="hidden" name="txt_id_order" id="txt_order_id" value="{{ $item->id_order_messenger }}" readonly>
-                                                                                <button class="dropdown-item toastrDefaultError" name="btn_app" value="reject_order"><code>Reject Order</code></button>
-                                                                            </form>
+                                                                            <button class="dropdown-item" name="btn_rej" data-toggle="modal" data-target="#modal_reject_messenger"><code>Reject Order</code></button>
                                                                         @else
                                                                         @endif
                                                                     </div>
@@ -503,12 +478,7 @@
                                                                                 <input type="hidden" name="txt_id_order" id="txt_order_id" value="{{ $item->id_order_messenger }}" readonly>
                                                                                 <button class="dropdown-item toastrDefaultError" name="btn_app" value="approve_order">Approve Order</button>
                                                                             </form>
-
-                                                                            <form onsubmit="return confirm('Are you sure you want to Reject this request ?');" action="{{ route('approve_messenger') }}" method="POST">
-                                                                                @csrf
-                                                                                <input type="hidden" name="txt_id_order" id="txt_order_id" value="{{ $item->id_order_messenger }}" readonly>
-                                                                                <button class="dropdown-item toastrDefaultError" name="btn_app" value="reject_order"><code>Reject Order</code></button>
-                                                                            </form>
+                                                                            <button class="dropdown-item" name="btn_rej" data-toggle="modal" data-target="#modal_reject_messenger"><code>Reject Order</code></button>
                                                                         @else
                                                                         @endif
                                                                     </div>
@@ -578,12 +548,7 @@
                                                                                 <input type="hidden" name="txt_id_order" id="txt_order_id" value="{{ $item->id_order_messenger }}" readonly>
                                                                                 <button class="dropdown-item toastrDefaultError" name="btn_app" value="approve_order">Approve Order</button>
                                                                             </form>
-
-                                                                            <form onsubmit="return confirm('Are you sure you want to Reject this request ?');" action="{{ route('approve_messenger') }}" method="POST">
-                                                                                @csrf
-                                                                                <input type="hidden" name="txt_id_order" id="txt_order_id" value="{{ $item->id_order_messenger }}" readonly>
-                                                                                <button class="dropdown-item toastrDefaultError" name="btn_app" value="reject_order"><code>Reject Order</code></button>
-                                                                            </form>
+                                                                            <button class="dropdown-item" name="btn_rej" data-toggle="modal" data-target="#modal_reject_messenger"><code>Reject Order</code></button>
                                                                         @else
                                                                         @endif
                                                                     </div>
@@ -605,6 +570,36 @@
             </div>
         </div>
     </section>
+    <form onsubmit="return confirm('Are you sure you want to Reject this request ?');" action="{{ route('approve_messenger') }}" method="POST" enctype="multipart/form-data" id="reject_order_messenger" name="reject_order_messenger">
+        @csrf
+        <div class="modal fade" id="modal_reject_messenger">
+            <div class="modal-dialog modal-lg">
+              <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Rejection Notes</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label for="txt_notes">Notes</label>
+                                <input type="hidden" name="txt_id_order" id="txt_order_id" value="{{ $item->id_order_messenger }}" readonly>
+                                <input type="text" name="txt_notes" id="txt_notes" class="form-control" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="submit" name="btn_app" value="reject_order" class="btn btn-primary">Submit</button>
+                </div>
+              </div>
+            </div>
+        </div>
+    </form>
 </div>
 @include('includes.footer')
 <script>
