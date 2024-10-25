@@ -187,6 +187,7 @@ class DriverController extends Controller
             'inputOrderPickUpTime'      => 'required',
             'arrive_date'               => 'required',
             'arrive_time'               => 'required',
+            'driver_name'              => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -195,6 +196,8 @@ class DriverController extends Controller
                 'message'   => 'Validation Error',
                 'errors'    => $validator->errors()
             ], 401);
+            // Alert::error('Error', 'All Form Must Be Filled !!');
+            // return redirect()->route('create_book_driver');
         } else {
             $driver_id = $request->driver_name;
             $order_pick_date = $request->inputOrderPickUpDate;
@@ -295,6 +298,7 @@ class DriverController extends Controller
                             $add_dest = $item_order->destination_address;
                             $dep_time = $item_order->order_pick_up_date . " " . $item_order->order_pick_up_time;
                             $max_time = $item_order->order_arrive_date . " " . $item_order->order_arrive_time;
+                            $client = $item_order->client;
                         }
                         $message =
                             '⭐ Pesanan Baru Order Driver ⭐' . "\n\n" .
@@ -303,43 +307,44 @@ class DriverController extends Controller
                             '3. Waktu Berangkat : ' . $dep_time . "\n" .
                             '4. Jenis : ' . $jenis . "\n" .
                             '5. Deskripsi : ' . $desc . "\n" .
-                            '6. Alamat Pickup : ' . $add_pick . "\n" .
-                            '7. Alamat Tujuan : ' . $add_dest . "\n" .
-                            '8. Maksimal Waktu Sampai : ' . $max_time . "\n" .
-                            'Segera Check orderan Driver terbaru di https:://scheduling-app.inlingua.co.id ';
+                            '6. Client : ' . $client . "\n" .
+                            '7. Alamat Pickup : ' . $add_pick . "\n" .
+                            '8. Alamat Tujuan : ' . $add_dest . "\n" .
+                            '9. Maksimal Waktu Sampai : ' . $max_time . "\n" .
+                            'Segera Check orderan Driver terbaru di https://scheduling-app.inlingua.co.id ';
                         $no_wa = $wa_num;
                         $token = 'vVg3VwUmzcTxGy3kBzo6';
 
-                        $curl = curl_init();
+                        // $curl = curl_init();
 
-                        curl_setopt_array($curl, array(
-                            CURLOPT_URL => 'https://api.fonnte.com/send',
-                            CURLOPT_RETURNTRANSFER => true,
-                            CURLOPT_ENCODING => '',
-                            CURLOPT_MAXREDIRS => 10,
-                            CURLOPT_TIMEOUT => 0,
-                            CURLOPT_FOLLOWLOCATION => true,
-                            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                            CURLOPT_CUSTOMREQUEST => 'POST',
-                            CURLOPT_POSTFIELDS => array(
-                                'target' => $no_wa,
-                                'message' => $message,
-                                'countryCode' => '62', //optional
-                            ),
-                            CURLOPT_HTTPHEADER => array(
-                                'Authorization: ' . $token //change TOKEN to your actual token
-                            ),
-                        ));
+                        // curl_setopt_array($curl, array(
+                        //     CURLOPT_URL => 'https://api.fonnte.com/send',
+                        //     CURLOPT_RETURNTRANSFER => true,
+                        //     CURLOPT_ENCODING => '',
+                        //     CURLOPT_MAXREDIRS => 10,
+                        //     CURLOPT_TIMEOUT => 0,
+                        //     CURLOPT_FOLLOWLOCATION => true,
+                        //     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                        //     CURLOPT_CUSTOMREQUEST => 'POST',
+                        //     CURLOPT_POSTFIELDS => array(
+                        //         'target' => $no_wa,
+                        //         'message' => $message,
+                        //         'countryCode' => '62', //optional
+                        //     ),
+                        //     CURLOPT_HTTPHEADER => array(
+                        //         'Authorization: ' . $token //change TOKEN to your actual token
+                        //     ),
+                        // ));
 
-                        $response = curl_exec($curl);
-                        if (curl_errno($curl)) {
-                            $error_msg = curl_error($curl);
-                        }
-                        curl_close($curl);
+                        // $response = curl_exec($curl);
+                        // if (curl_errno($curl)) {
+                        //     $error_msg = curl_error($curl);
+                        // }
+                        // curl_close($curl);
 
-                        if (isset($error_msg)) {
-                            echo $error_msg;
-                        }
+                        // if (isset($error_msg)) {
+                        //     echo $error_msg;
+                        // }
 
                         Alert::success('Success', 'Sending Order Details to GA !!');
                         return redirect()->route('index_driver');
@@ -358,20 +363,112 @@ class DriverController extends Controller
         if ($status == "approve_order") {
             $order_update_app = OrderDriver::where('id_order_driver', '=', $order_id)->first();
             $order_update_app->update([
-                'status_order_driver'   => "1",
+                'status_order_driver'   => "2",
                 'updated_at'            => date('Y-m-d h:i:s')
             ]);
+
+            // Send WA Approved
+            $get_user = DB::table('order_driver')
+                ->join('detail_order_driver', 'detail_order_driver.id_order_driver', '=', 'order_driver.id_order_driver')
+                ->join('users', 'users.id', '=', 'order_driver.id_users')
+                ->join('employee', 'employee.id_users', '=', 'users.id')
+                ->where('order_driver.id_order_driver', '=', $order_id)
+                ->get();
+            foreach ($get_user as $item_user) {
+                $wa_num = $item_user->user_phone;
+            }
+            $message =
+                '⭐ Your Order are Approved ⭐';
+            $no_wa = $wa_num;
+            $token = 'vVg3VwUmzcTxGy3kBzo6';
+
+            $curl = curl_init();
+
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => 'https://api.fonnte.com/send',
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => '',
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 0,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => 'POST',
+                CURLOPT_POSTFIELDS => array(
+                    'target' => $no_wa,
+                    'message' => $message,
+                    'countryCode' => '62', //optional
+                ),
+                CURLOPT_HTTPHEADER => array(
+                    'Authorization: ' . $token //change TOKEN to your actual token
+                ),
+            ));
+
+            $response = curl_exec($curl);
+            if (curl_errno($curl)) {
+                $error_msg = curl_error($curl);
+            }
+            curl_close($curl);
+
+            if (isset($error_msg)) {
+                echo $error_msg;
+            }
             return $this->sendWa($order_id);
-            return $this->sendWaApproved($order_id);
             // dd("Approved");
         } else if ($status == "reject_order") {
             // dd($);
             $order_update_rej = OrderDriver::where('id_order_driver', '=', $order_id)->first();
             $order_update_rej->update([
-                'status_order_driver'   => "2",
+                'status_order_driver'   => "4",
                 'updated_at'            => date('Y-m-d h:i:s')
             ]);
-            return $this->sendWaRejection($order_id, $reject_notes);
+
+            // Send WA Rejection
+            $get_user = DB::table('order_driver')
+                ->join('detail_order_driver', 'detail_order_driver.id_order_driver', '=', 'order_driver.id_order_driver')
+                ->join('users', 'users.id', '=', 'order_driver.id_users')
+                ->join('employee', 'employee.id_users', '=', 'users.id')
+                ->where('order_driver.id_order_driver', '=', $order_id)
+                ->get();
+            foreach ($get_user as $item_user) {
+                $wa_num = $item_user->user_phone;
+            }
+            $message =
+                '⭐ Your Order are Rejected ⭐' . "\n\n" .
+                'Reason : ' . $reject_notes . "\n" .
+                'Please submit new Order!!';
+            $no_wa = $wa_num;
+            $token = 'vVg3VwUmzcTxGy3kBzo6';
+
+            $curl = curl_init();
+
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => 'https://api.fonnte.com/send',
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => '',
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 0,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => 'POST',
+                CURLOPT_POSTFIELDS => array(
+                    'target' => $no_wa,
+                    'message' => $message,
+                    'countryCode' => '62', //optional
+                ),
+                CURLOPT_HTTPHEADER => array(
+                    'Authorization: ' . $token //change TOKEN to your actual token
+                ),
+            ));
+
+            $response = curl_exec($curl);
+            if (curl_errno($curl)) {
+                $error_msg = curl_error($curl);
+            }
+            curl_close($curl);
+
+            if (isset($error_msg)) {
+                echo $error_msg;
+            }
 
             // Alert::success('Success', 'Order Rejected & Return Order to User !!');
             // return redirect()->route('index_driver');
@@ -455,106 +552,107 @@ class DriverController extends Controller
     // Approved
     public function sendWaApproved($order_id)
     {
-        $get_user = DB::table('order_driver')
-            ->join('detail_order_driver', 'detail_order_driver.id_order_driver', '=', 'order_driver.id_order_driver')
-            ->join('users', 'users.id', '=', 'order_driver.id_users')
-            ->join('employee', 'employee.id_users', '=', 'users.id')
-            ->where('order_driver.id_order_driver', '=', $order_id)
-            ->get();
-        foreach ($get_user as $item_user) {
-            $wa_num = $item_user->user_phone;
-        }
-        $message =
-            '⭐ Your Order are Approved ⭐';
-        $no_wa = $wa_num;
-        $token = 'vVg3VwUmzcTxGy3kBzo6';
+        //     $get_user = DB::table('order_driver')
+        //         ->join('detail_order_driver', 'detail_order_driver.id_order_driver', '=', 'order_driver.id_order_driver')
+        //         ->join('users', 'users.id', '=', 'order_driver.id_users')
+        //         ->join('employee', 'employee.id_users', '=', 'users.id')
+        //         ->where('order_driver.id_order_driver', '=', $order_id)
+        //         ->get();
+        //     foreach ($get_user as $item_user) {
+        //         $wa_num = $item_user->user_phone;
+        //     }
+        //     $message =
+        //         '⭐ Your Order are Approved ⭐';
+        //     $no_wa = $wa_num;
+        //     $token = 'vVg3VwUmzcTxGy3kBzo6';
 
-        $curl = curl_init();
+        //     $curl = curl_init();
 
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://api.fonnte.com/send',
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => array(
-                'target' => $no_wa,
-                'message' => $message,
-                'countryCode' => '62', //optional
-            ),
-            CURLOPT_HTTPHEADER => array(
-                'Authorization: ' . $token //change TOKEN to your actual token
-            ),
-        ));
+        //     curl_setopt_array($curl, array(
+        //         CURLOPT_URL => 'https://api.fonnte.com/send',
+        //         CURLOPT_RETURNTRANSFER => true,
+        //         CURLOPT_ENCODING => '',
+        //         CURLOPT_MAXREDIRS => 10,
+        //         CURLOPT_TIMEOUT => 0,
+        //         CURLOPT_FOLLOWLOCATION => true,
+        //         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        //         CURLOPT_CUSTOMREQUEST => 'POST',
+        //         CURLOPT_POSTFIELDS => array(
+        //             'target' => $no_wa,
+        //             'message' => $message,
+        //             'countryCode' => '62', //optional
+        //         ),
+        //         CURLOPT_HTTPHEADER => array(
+        //             'Authorization: ' . $token //change TOKEN to your actual token
+        //         ),
+        //     ));
 
-        $response = curl_exec($curl);
-        if (curl_errno($curl)) {
-            $error_msg = curl_error($curl);
-        }
-        curl_close($curl);
+        //     $response = curl_exec($curl);
+        //     if (curl_errno($curl)) {
+        //         $error_msg = curl_error($curl);
+        //     }
+        //     curl_close($curl);
 
-        if (isset($error_msg)) {
-            echo $error_msg;
-        }
-        // echo $response;
-        Alert::success('Success', 'Order Rejected!!');
-        return redirect()->route('index_driver');
+        //     if (isset($error_msg)) {
+        //         echo $error_msg;
+        //     }
+        //     // echo $response;
+        //     Alert::success('Success', 'Order Rejected!!');
+        //     return redirect()->route('index_driver');
     }
+
     // Rejected
     public function sendWaRejection($order_id, $reject_notes)
     {
-        $get_user = DB::table('order_driver')
-            ->join('detail_order_driver', 'detail_order_driver.id_order_driver', '=', 'order_driver.id_order_driver')
-            ->join('users', 'users.id', '=', 'order_driver.id_users')
-            ->join('employee', 'employee.id_users', '=', 'users.id')
-            ->where('order_driver.id_order_driver', '=', $order_id)
-            ->get();
-        foreach ($get_user as $item_user) {
-            $wa_num = $item_user->user_phone;
-        }
-        $message =
-            '⭐ Your Order are Rejected ⭐' . "\n\n" .
-            'Reason : ' . $reject_notes . "\n" .
-            'Please submit new Order!!';
-        $no_wa = $wa_num;
-        $token = 'vVg3VwUmzcTxGy3kBzo6';
+        // $get_user = DB::table('order_driver')
+        //     ->join('detail_order_driver', 'detail_order_driver.id_order_driver', '=', 'order_driver.id_order_driver')
+        //     ->join('users', 'users.id', '=', 'order_driver.id_users')
+        //     ->join('employee', 'employee.id_users', '=', 'users.id')
+        //     ->where('order_driver.id_order_driver', '=', $order_id)
+        //     ->get();
+        // foreach ($get_user as $item_user) {
+        //     $wa_num = $item_user->user_phone;
+        // }
+        // $message =
+        //     '⭐ Your Order are Rejected ⭐' . "\n\n" .
+        //     'Reason : ' . $reject_notes . "\n" .
+        //     'Please submit new Order!!';
+        // $no_wa = $wa_num;
+        // $token = 'vVg3VwUmzcTxGy3kBzo6';
 
-        $curl = curl_init();
+        // $curl = curl_init();
 
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://api.fonnte.com/send',
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => array(
-                'target' => $no_wa,
-                'message' => $message,
-                'countryCode' => '62', //optional
-            ),
-            CURLOPT_HTTPHEADER => array(
-                'Authorization: ' . $token //change TOKEN to your actual token
-            ),
-        ));
+        // curl_setopt_array($curl, array(
+        //     CURLOPT_URL => 'https://api.fonnte.com/send',
+        //     CURLOPT_RETURNTRANSFER => true,
+        //     CURLOPT_ENCODING => '',
+        //     CURLOPT_MAXREDIRS => 10,
+        //     CURLOPT_TIMEOUT => 0,
+        //     CURLOPT_FOLLOWLOCATION => true,
+        //     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        //     CURLOPT_CUSTOMREQUEST => 'POST',
+        //     CURLOPT_POSTFIELDS => array(
+        //         'target' => $no_wa,
+        //         'message' => $message,
+        //         'countryCode' => '62', //optional
+        //     ),
+        //     CURLOPT_HTTPHEADER => array(
+        //         'Authorization: ' . $token //change TOKEN to your actual token
+        //     ),
+        // ));
 
-        $response = curl_exec($curl);
-        if (curl_errno($curl)) {
-            $error_msg = curl_error($curl);
-        }
-        curl_close($curl);
+        // $response = curl_exec($curl);
+        // if (curl_errno($curl)) {
+        //     $error_msg = curl_error($curl);
+        // }
+        // curl_close($curl);
 
-        if (isset($error_msg)) {
-            echo $error_msg;
-        }
-        // echo $response;
-        Alert::success('Success', 'Order Rejected & Return Order to User !!');
-        return redirect()->route('index_driver');
+        // if (isset($error_msg)) {
+        //     echo $error_msg;
+        // }
+        // // echo $response;
+        // Alert::success('Success', 'Order Rejected & Return Order to User !!');
+        // return redirect()->route('index_driver');
     }
 
 
@@ -563,9 +661,13 @@ class DriverController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show_detail_order(string $id)
     {
-        //
+        $get_data = DB::table('order_driver')
+            ->join('detail_order_driver', 'detail_order_driver.id_order_driver', '=', 'order_driver.id_order_driver')
+            ->join('users', 'users.id', '=', 'order_driver.id_users')
+            ->where('order_driver.deleted_at', '=', NULL)->get();
+        return view('components.modals.driver.show_detail_order', ['get_data' => $get_data]);
     }
 
     /**

@@ -25,9 +25,11 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
     Route::post('/Driver/Store', [DriverController::class, 'store_create_driver'])->name('store_create_driver');
     Route::get('/Driver/Schedule', [DriverController::class, 'index_schedule_driver'])->name('index_driver');
     Route::post('/Driver/Schedule/Result', [DriverController::class, 'index_result_driver'])->name('index_result_driver');
+    Route::get('/Driver/Schedule/Show/{id}', [DriverController::class, 'show_detail_order'])->name('show_detail_order_driver');
     Route::get('/Driver/Book', [DriverController::class, 'create_booking'])->name('create_book_driver');
     Route::post('/Driver/Book/Store', [DriverController::class, 'store_booking'])->name('store_book_driver');
     Route::post('/Driver/Book/Status', [DriverController::class, 'approve_driver'])->name('approve_driver');
+
 
     Route::get('/Driver/Send/WA', [DriverController::class, 'sendWa'])->name('sendWa');
 
@@ -35,6 +37,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
     Route::post('/Messenger/Store', [MessengerController::class, 'store_create_messenger'])->name('store_create_messenger');
     Route::get('/Messenger/Schedule', [MessengerController::class, 'index_schedule_messenger'])->name('index_schedule_messenger');
     Route::post('/Messenger/Schedule/Result', [MessengerController::class, 'index_result_messenger'])->name('index_result_messenger');
+    Route::get('/Messenger/Schedule/Show/{id}', [MessengerController::class, 'show_detail_order'])->name('show_detail_order_messenger');
     Route::get('/Messenger/Book', [MessengerController::class, 'create_book_messenger'])->name('create_book_messenger');
     Route::post('/Messenger/Book/Store', [MessengerController::class, 'store_book_messenger'])->name('store_book_messenger');
     Route::post('/Messenger/Book/Status', [MessengerController::class, 'approve_messenger'])->name('approve_messenger');

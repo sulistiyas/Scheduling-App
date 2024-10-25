@@ -180,14 +180,17 @@ class MessengerController extends Controller
             'inputOrderPickUpTime'      => 'required',
             'arrive_date'               => 'required',
             'arrive_time'               => 'required',
+            'messenger_name,'           => 'required'
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'status'    => false,
-                'message'   => 'Validation Error',
-                'errors'    => $validator->errors()
-            ], 401);
+            // return response()->json([
+            //     'status'    => false,
+            //     'message'   => 'Validation Error',
+            //     'errors'    => $validator->errors()
+            // ], 401);
+            Alert::error('Error', 'All Form Must Be Filled !!');
+            return redirect()->route('create_book_messenger');
         } else {
             $messenger_id = $request->messenger_name;
             $order_pick_date = $request->inputOrderPickUpDate;
@@ -288,6 +291,7 @@ class MessengerController extends Controller
                             $add_dest = $item_order->destination_address;
                             $dep_time = $item_order->order_pick_up_date . " " . $item_order->order_pick_up_time;
                             $max_time = $item_order->order_arrive_date . " " . $item_order->order_arrive_time;
+                            $client = $item_order->client;
                         }
                         $message =
                             '⭐ Pesanan Baru Order Messenger ⭐' . "\n\n" .
@@ -296,44 +300,45 @@ class MessengerController extends Controller
                             '3. Waktu Berangkat : ' . $dep_time . "\n" .
                             '4. Jenis : ' . $jenis . "\n" .
                             '5. Deskripsi : ' . $desc . "\n" .
-                            '6. Alamat Pickup : ' . $add_pick . "\n" .
-                            '7. Alamat Tujuan : ' . $add_dest . "\n" .
-                            '8. Maksimal Waktu Sampai : ' . $max_time . "\n" .
-                            'Segera Check orderan Messenger terbaru di https:://scheduling-app.inlingua.co.id ';
+                            '6. Client : ' . $client . "\n" .
+                            '7. Alamat Pickup : ' . $add_pick . "\n" .
+                            '8. Alamat Tujuan : ' . $add_dest . "\n" .
+                            '9. Maksimal Waktu Sampai : ' . $max_time . "\n" .
+                            'Segera Check orderan Driver terbaru di https://scheduling-app.inlingua.co.id ';
                         $no_wa = $wa_num;
                         $token = 'vVg3VwUmzcTxGy3kBzo6';
 
-                        $curl = curl_init();
+                        // $curl = curl_init();
 
-                        curl_setopt_array($curl, array(
-                            CURLOPT_URL => 'https://api.fonnte.com/send',
-                            CURLOPT_RETURNTRANSFER => true,
-                            CURLOPT_ENCODING => '',
-                            CURLOPT_MAXREDIRS => 10,
-                            CURLOPT_TIMEOUT => 0,
-                            CURLOPT_FOLLOWLOCATION => true,
-                            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                            CURLOPT_CUSTOMREQUEST => 'POST',
-                            CURLOPT_POSTFIELDS => array(
-                                // 'target' => '082110873602',
-                                'target' => $no_wa,
-                                'message' => $message,
-                                'countryCode' => '62', //optional
-                            ),
-                            CURLOPT_HTTPHEADER => array(
-                                'Authorization: ' . $token //change TOKEN to your actual token
-                            ),
-                        ));
+                        // curl_setopt_array($curl, array(
+                        //     CURLOPT_URL => 'https://api.fonnte.com/send',
+                        //     CURLOPT_RETURNTRANSFER => true,
+                        //     CURLOPT_ENCODING => '',
+                        //     CURLOPT_MAXREDIRS => 10,
+                        //     CURLOPT_TIMEOUT => 0,
+                        //     CURLOPT_FOLLOWLOCATION => true,
+                        //     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                        //     CURLOPT_CUSTOMREQUEST => 'POST',
+                        //     CURLOPT_POSTFIELDS => array(
+                        //         // 'target' => '082110873602',
+                        //         'target' => $no_wa,
+                        //         'message' => $message,
+                        //         'countryCode' => '62', //optional
+                        //     ),
+                        //     CURLOPT_HTTPHEADER => array(
+                        //         'Authorization: ' . $token //change TOKEN to your actual token
+                        //     ),
+                        // ));
 
-                        $response = curl_exec($curl);
-                        if (curl_errno($curl)) {
-                            $error_msg = curl_error($curl);
-                        }
-                        curl_close($curl);
+                        // $response = curl_exec($curl);
+                        // if (curl_errno($curl)) {
+                        //     $error_msg = curl_error($curl);
+                        // }
+                        // curl_close($curl);
 
-                        if (isset($error_msg)) {
-                            echo $error_msg;
-                        }
+                        // if (isset($error_msg)) {
+                        //     echo $error_msg;
+                        // }
                         Alert::success('Success', 'The order has been sent to GA');
                         return redirect()->route('create_book_messenger');
                     }
@@ -351,18 +356,108 @@ class MessengerController extends Controller
         if ($status == "approve_order") {
             $order_update_app = OrderMessenger::where('id_order_messenger', '=', $order_id)->first();
             $order_update_app->update([
-                'status_order_messenger'   => "1",
-                'updated_at'            => date('Y-m-d h:i:s')
-            ]);
-            return $this->sendWaMessenger($order_id);
-            return $this->sendWaApprovedMessenger($order_id);
-        } else if ($status == "reject_order") {
-            $order_update_rej = OrderMessenger::where('id_order_messenger', '=', $order_id)->first();
-            $order_update_rej->update([
                 'status_order_messenger'   => "2",
                 'updated_at'            => date('Y-m-d h:i:s')
             ]);
-            return $this->sendWaRejectionMessenger($order_id, $reject_notes);
+
+            // Approved
+            $get_user = DB::table('order_messenger')
+                ->join('detail_order_messenger', 'detail_order_messenger.id_order_messenger', '=', 'order_messenger.id_order_messenger')
+                ->join('users', 'users.id', '=', 'order_messenger.id_users')
+                ->join('employee', 'employee.id_users', '=', 'users.id')
+                ->where('order_messenger.id_order_messenger', '=', $order_id)
+                ->get();
+            foreach ($get_user as $item_user) {
+                $wa_num = $item_user->user_phone;
+            }
+            $message =
+                '⭐ Your Order are Approved ⭐';
+            $no_wa = $wa_num;
+            $token = 'vVg3VwUmzcTxGy3kBzo6';
+
+            $curl = curl_init();
+
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => 'https://api.fonnte.com/send',
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => '',
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 0,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => 'POST',
+                CURLOPT_POSTFIELDS => array(
+                    'target' => $no_wa,
+                    'message' => $message,
+                    'countryCode' => '62', //optional
+                ),
+                CURLOPT_HTTPHEADER => array(
+                    'Authorization: ' . $token //change TOKEN to your actual token
+                ),
+            ));
+
+            $response = curl_exec($curl);
+            if (curl_errno($curl)) {
+                $error_msg = curl_error($curl);
+            }
+            curl_close($curl);
+
+            if (isset($error_msg)) {
+                echo $error_msg;
+            }
+            return $this->sendWaMessenger($order_id);
+        } else if ($status == "reject_order") {
+            $order_update_rej = OrderMessenger::where('id_order_messenger', '=', $order_id)->first();
+            $order_update_rej->update([
+                'status_order_messenger'   => "4",
+                'updated_at'            => date('Y-m-d h:i:s')
+            ]);
+            $get_user = DB::table('order_messenger')
+                ->join('detail_order_messenger', 'detail_order_messenger.id_order_messenger', '=', 'order_messenger.id_order_messenger')
+                ->join('users', 'users.id', '=', 'order_messenger.id_users')
+                ->join('employee', 'employee.id_users', '=', 'users.id')
+                ->where('order_messenger.id_order_messenger', '=', $order_id)
+                ->get();
+            foreach ($get_user as $item_user) {
+                $wa_num = $item_user->user_phone;
+            }
+            $message =
+                '⭐ Your Order are Rejected ⭐' . "\n\n" .
+                'Reason : ' . $reject_notes . "\n" .
+                'Please submit new Order!!';
+            $no_wa = $wa_num;
+            $token = 'vVg3VwUmzcTxGy3kBzo6';
+
+            $curl = curl_init();
+
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => 'https://api.fonnte.com/send',
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => '',
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 0,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => 'POST',
+                CURLOPT_POSTFIELDS => array(
+                    'target' => $no_wa,
+                    'message' => $message,
+                    'countryCode' => '62', //optional
+                ),
+                CURLOPT_HTTPHEADER => array(
+                    'Authorization: ' . $token //change TOKEN to your actual token
+                ),
+            ));
+
+            $response = curl_exec($curl);
+            if (curl_errno($curl)) {
+                $error_msg = curl_error($curl);
+            }
+            curl_close($curl);
+
+            if (isset($error_msg)) {
+                echo $error_msg;
+            }
         }
     }
 
@@ -405,37 +500,37 @@ class MessengerController extends Controller
         $no_wa = $wa_num;
         $token = 'vVg3VwUmzcTxGy3kBzo6';
 
-        $curl = curl_init();
+        // $curl = curl_init();
 
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://api.fonnte.com/send',
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => array(
-                // 'target' => '082110873602',
-                'target' => $no_wa,
-                'message' => $message,
-                'countryCode' => '62', //optional
-            ),
-            CURLOPT_HTTPHEADER => array(
-                'Authorization: ' . $token //change TOKEN to your actual token
-            ),
-        ));
+        // curl_setopt_array($curl, array(
+        //     CURLOPT_URL => 'https://api.fonnte.com/send',
+        //     CURLOPT_RETURNTRANSFER => true,
+        //     CURLOPT_ENCODING => '',
+        //     CURLOPT_MAXREDIRS => 10,
+        //     CURLOPT_TIMEOUT => 0,
+        //     CURLOPT_FOLLOWLOCATION => true,
+        //     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        //     CURLOPT_CUSTOMREQUEST => 'POST',
+        //     CURLOPT_POSTFIELDS => array(
+        //         // 'target' => '082110873602',
+        //         'target' => $no_wa,
+        //         'message' => $message,
+        //         'countryCode' => '62', //optional
+        //     ),
+        //     CURLOPT_HTTPHEADER => array(
+        //         'Authorization: ' . $token //change TOKEN to your actual token
+        //     ),
+        // ));
 
-        $response = curl_exec($curl);
-        if (curl_errno($curl)) {
-            $error_msg = curl_error($curl);
-        }
-        curl_close($curl);
+        // $response = curl_exec($curl);
+        // if (curl_errno($curl)) {
+        //     $error_msg = curl_error($curl);
+        // }
+        // curl_close($curl);
 
-        if (isset($error_msg)) {
-            echo $error_msg;
-        }
+        // if (isset($error_msg)) {
+        //     echo $error_msg;
+        // }
         // echo $message;
         Alert::success('Success', 'Order Approved & Sending Details to Messenger !!');
         return redirect()->route('index_schedule_messenger');
@@ -444,106 +539,106 @@ class MessengerController extends Controller
     // Approved
     public function sendWaApprovedMessenger($order_id)
     {
-        $get_user = DB::table('order_messenger')
-            ->join('detail_order_messenger', 'detail_order_messenger.id_order_messenger', '=', 'order_messenger.id_order_messenger')
-            ->join('users', 'users.id', '=', 'order_messenger.id_users')
-            ->join('employee', 'employee.id_users', '=', 'users.id')
-            ->where('order_messenger.id_order_messenger', '=', $order_id)
-            ->get();
-        foreach ($get_user as $item_user) {
-            $wa_num = $item_user->user_phone;
-        }
-        $message =
-            '⭐ Your Order are Approved ⭐';
-        $no_wa = $wa_num;
-        $token = 'vVg3VwUmzcTxGy3kBzo6';
+        // $get_user = DB::table('order_messenger')
+        //     ->join('detail_order_messenger', 'detail_order_messenger.id_order_messenger', '=', 'order_messenger.id_order_messenger')
+        //     ->join('users', 'users.id', '=', 'order_messenger.id_users')
+        //     ->join('employee', 'employee.id_users', '=', 'users.id')
+        //     ->where('order_messenger.id_order_messenger', '=', $order_id)
+        //     ->get();
+        // foreach ($get_user as $item_user) {
+        //     $wa_num = $item_user->user_phone;
+        // }
+        // $message =
+        //     '⭐ Your Order are Approved ⭐';
+        // $no_wa = $wa_num;
+        // $token = 'vVg3VwUmzcTxGy3kBzo6';
 
-        $curl = curl_init();
+        // $curl = curl_init();
 
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://api.fonnte.com/send',
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => array(
-                'target' => $no_wa,
-                'message' => $message,
-                'countryCode' => '62', //optional
-            ),
-            CURLOPT_HTTPHEADER => array(
-                'Authorization: ' . $token //change TOKEN to your actual token
-            ),
-        ));
+        // curl_setopt_array($curl, array(
+        //     CURLOPT_URL => 'https://api.fonnte.com/send',
+        //     CURLOPT_RETURNTRANSFER => true,
+        //     CURLOPT_ENCODING => '',
+        //     CURLOPT_MAXREDIRS => 10,
+        //     CURLOPT_TIMEOUT => 0,
+        //     CURLOPT_FOLLOWLOCATION => true,
+        //     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        //     CURLOPT_CUSTOMREQUEST => 'POST',
+        //     CURLOPT_POSTFIELDS => array(
+        //         'target' => $no_wa,
+        //         'message' => $message,
+        //         'countryCode' => '62', //optional
+        //     ),
+        //     CURLOPT_HTTPHEADER => array(
+        //         'Authorization: ' . $token //change TOKEN to your actual token
+        //     ),
+        // ));
 
-        $response = curl_exec($curl);
-        if (curl_errno($curl)) {
-            $error_msg = curl_error($curl);
-        }
-        curl_close($curl);
+        // $response = curl_exec($curl);
+        // if (curl_errno($curl)) {
+        //     $error_msg = curl_error($curl);
+        // }
+        // curl_close($curl);
 
-        if (isset($error_msg)) {
-            echo $error_msg;
-        }
-        // echo $response;
-        Alert::success('Success', 'Order Rejected!!');
-        return redirect()->route('index_messenger');
+        // if (isset($error_msg)) {
+        //     echo $error_msg;
+        // }
+        // // echo $response;
+        // Alert::success('Success', 'Order Rejected!!');
+        // return redirect()->route('index_messenger');
     }
     // Rejected
     public function sendWaRejectionMessenger($order_id, $reject_notes)
     {
-        $get_user = DB::table('order_messenger')
-            ->join('detail_order_messenger', 'detail_order_messenger.id_order_messenger', '=', 'order_messenger.id_order_messenger')
-            ->join('users', 'users.id', '=', 'order_messenger.id_users')
-            ->join('employee', 'employee.id_users', '=', 'users.id')
-            ->where('order_messenger.id_order_messenger', '=', $order_id)
-            ->get();
-        foreach ($get_user as $item_user) {
-            $wa_num = $item_user->user_phone;
-        }
-        $message =
-            '⭐ Your Order are Rejected ⭐' . "\n\n" .
-            'Reason : ' . $reject_notes . "\n" .
-            'Please submit new Order!!';
-        $no_wa = $wa_num;
-        $token = 'vVg3VwUmzcTxGy3kBzo6';
+        // $get_user = DB::table('order_messenger')
+        //     ->join('detail_order_messenger', 'detail_order_messenger.id_order_messenger', '=', 'order_messenger.id_order_messenger')
+        //     ->join('users', 'users.id', '=', 'order_messenger.id_users')
+        //     ->join('employee', 'employee.id_users', '=', 'users.id')
+        //     ->where('order_messenger.id_order_messenger', '=', $order_id)
+        //     ->get();
+        // foreach ($get_user as $item_user) {
+        //     $wa_num = $item_user->user_phone;
+        // }
+        // $message =
+        //     '⭐ Your Order are Rejected ⭐' . "\n\n" .
+        //     'Reason : ' . $reject_notes . "\n" .
+        //     'Please submit new Order!!';
+        // $no_wa = $wa_num;
+        // $token = 'vVg3VwUmzcTxGy3kBzo6';
 
-        $curl = curl_init();
+        // $curl = curl_init();
 
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://api.fonnte.com/send',
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => array(
-                'target' => $no_wa,
-                'message' => $message,
-                'countryCode' => '62', //optional
-            ),
-            CURLOPT_HTTPHEADER => array(
-                'Authorization: ' . $token //change TOKEN to your actual token
-            ),
-        ));
+        // curl_setopt_array($curl, array(
+        //     CURLOPT_URL => 'https://api.fonnte.com/send',
+        //     CURLOPT_RETURNTRANSFER => true,
+        //     CURLOPT_ENCODING => '',
+        //     CURLOPT_MAXREDIRS => 10,
+        //     CURLOPT_TIMEOUT => 0,
+        //     CURLOPT_FOLLOWLOCATION => true,
+        //     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        //     CURLOPT_CUSTOMREQUEST => 'POST',
+        //     CURLOPT_POSTFIELDS => array(
+        //         'target' => $no_wa,
+        //         'message' => $message,
+        //         'countryCode' => '62', //optional
+        //     ),
+        //     CURLOPT_HTTPHEADER => array(
+        //         'Authorization: ' . $token //change TOKEN to your actual token
+        //     ),
+        // ));
 
-        $response = curl_exec($curl);
-        if (curl_errno($curl)) {
-            $error_msg = curl_error($curl);
-        }
-        curl_close($curl);
+        // $response = curl_exec($curl);
+        // if (curl_errno($curl)) {
+        //     $error_msg = curl_error($curl);
+        // }
+        // curl_close($curl);
 
-        if (isset($error_msg)) {
-            echo $error_msg;
-        }
-        // echo $response;
-        Alert::success('Success', 'Order Rejected & Return Order to User !!');
-        return redirect()->route('index_schedule_messenger');
+        // if (isset($error_msg)) {
+        //     echo $error_msg;
+        // }
+        // // echo $response;
+        // Alert::success('Success', 'Order Rejected & Return Order to User !!');
+        // return redirect()->route('index_schedule_messenger');
     }
 
     /**
