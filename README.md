@@ -1,4 +1,4 @@
-<h2>Scheduling_APP</h2>
+<h2>Scheduling - APP</h2>
 <h4>Driver & Messenger Booking Scheduler</h4>
 <br>
 <br>
