@@ -17,41 +17,24 @@ class UserSeeder extends Seeder
         $users = [
             [
                 'id' => 1,
-                'name' => 'Sulistiya Nugroho',
-                'email' => 'sulis.nugroho@inlingua.co.id',
-                'password' => Hash::make('semangat45'),
+                'name' => 'Administrator',
+                'email' => 'admin@mail.com',
+                'password' => Hash::make('semangat'),
                 'user_level'    => '0',
                 'created_at'   => date('Y-m-d'),
                 'updated_at'   => date('Y-m-d'),
             ],
-            [
-                'id' => 2,
-                'name' => 'Isnaini Nur Pramesty',
-                'email' => 'pramesnain@gmail.com',
-                'password' => Hash::make('semangat'),
-                'user_level'    => '1',
-                'created_at'   => date('Y-m-d'),
-                'updated_at'   => date('Y-m-d'),
-            ]
         ];
         DB::table('users')->insert($users);
         $employee = [
             [
                 'id_employee'       => 1,
                 'id_users'          => 1,
-                'user_phone'        => '082110873602',
+                'user_phone'        => '0812345678',
                 'user_job_status'   => 'Admin',
                 'created_at'        => date('Y-m-d'),
                 'updated_at'        => date('Y-m-d'),
             ],
-            [
-                'id_employee'       => 2,
-                'id_users'          => 2,
-                'user_phone'        => '085711250060',
-                'user_job_status'   => 'Staff',
-                'created_at'        => date('Y-m-d'),
-                'updated_at'        => date('Y-m-d'),
-            ]
         ];
         DB::table('employee')->insert($employee);
     }
